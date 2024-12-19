@@ -1,0 +1,31 @@
+# .NET
+bin/
+obj/
+packages/
+
+# Rider / JetBrains
+.idea/
+*.iml
+/.idea/
+/_ReSharper.Caches/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Logs and temporary files
+*.log
+*.swp
+
+# NuGet packages
+.nuget/
+# Uncomment to ignore global NuGet package cache
+# ~/.nuget/
+
+# Visual Studio for Mac
+.vscode/
+
+# Build results and temporary files
+/dist/
