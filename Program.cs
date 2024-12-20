@@ -668,6 +668,55 @@ internal class Program
         // ensure static property is working by testing as below
         Console.WriteLine("# of Animals : {0}", Animal.NumOfAnimals);
 
+        var whiskers = new Animal
+        {
+            Name = "Whiskers",
+            Sound = "Meow"
+        };
+
+        var grover = new Dog();
+        grover.Name = "Grover";
+        grover.Sound = "Woof";
+        grover.Sound2 = "Grrrrr";
+        
+        // Demonstrate changing the protected field sound
+        grover.Sound = "Wooooof";
+        whiskers.MakeSound();
+        grover.MakeSound();
+        
+        // Define the AnimalIDInfo
+        whiskers.SetAnimalIDInfo(12345, "Sally Smith");
+        grover.SetAnimalIDInfo(12346, "Paul Brown");
+
+        whiskers.GetAnimalIDInfo();
+        
+        // Test the inner class
+        var getHealth = new Animal.AnimalHealth();
+        
+        // You can define 2 Animal objects but have
+        // one actually be a Dog type. 
+        Animal monkey = new Animal()
+        {
+            Name = "Happy",
+            Sound = "Eeeeee"
+        };
+
+        Animal spot = new Dog()
+        {
+            Name = "Spot",
+            Sound = "Wooooff",
+            Sound2 = "Geerrrr"
+        };
+        
+        // To ensure a method in `Dog` is called when invoked on an `Animal` reference, the method in the parent (`Animal`) must be marked as `virtual` or `abstract`, and the method in the subclass (`Dog`) should override it.
+        spot.MakeSound();
+        
+        // The above example demonstrates how polymorphism allows a subclass to override a superclass method, ensuring the correct method is called even when the subclass is referenced as the superclass type.
+        
+        
+        Console.WriteLine("Is my animal healthy : {0}", getHealth.HealthyWeight(11, 46));
+
+
         // ----- NULLABLE TYPES -----
         // Data types by default cannot have a
         // value of null. Often null is needed

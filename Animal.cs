@@ -11,17 +11,25 @@ public class Animal
     // Read-only field, set only once at runtime (through constructor)
     public readonly int idNum;
 
-    // Inheritance has an "is-a" relationship,
-    // while an aggregation or delegate
-    // represents a "Has-a" relationship
-    // like we have here with the AnimalIDInfo object
-    protected AnimalIDInfo animalIDInfo = new();
+
+    /**
+     * This means that whenever an instance of the Animal class is created, then an AnimalIDInfo object will also be created and associated with that particular instance.
+     * This is an example of composition or "Has-a" relationship, where an Animal "has-a" AnimalIDInfo object.
+     * Every time you create a new Animal, the animalIDInfo member (which holds the AnimalIDInfo object) will be instantiated automatically.
+     * ---------------------------------------------------------------------------------------------------------------------------------
+     * The AnimalIDInfo object will not exist or instantiate independently outside the context of the Animal instance, but will be directly tied to the specific instance of Animal.
+     * ---------------------------------------------------------------------------------------------------------------------------------
+     * summary: Animal "has-a" AnimalIDInfo relationship, where Animal creates and owns an AnimalIDInfo instance or AnimalIDInfo can't be instantiated outside Animal
+     * Animal "has-a" AnimalIDInfo relationship (composition), while inheritance represents an "is-a" relationship.
+     */
+    protected AnimalIDInfo animalIDInfo = new(); // same as new AnimalDIInfo();
 
     // Private fields for storing the name and sound of the animal
     private string name;
     protected string sound;
 
     // Default constructor. If no parameters are passed, it calls the next constructor with default values.
+    // N.B: this takes 2 arguments and then this calls the constructor that takes 2 arguments and then if any constructor has 2 params and no value provided, then the default value will be provided from here
     public Animal() : this("No Name", "No Sound")
     {
     }
@@ -48,7 +56,7 @@ public class Animal
         idNum = rnd.Next(1, 2147483640); // Generate a random ID between 1 and 2 billion
     }
 
-    // Property for Name with validation logic
+    // This is how to write a getter a setter together
     public string Name
     {
         get => name; // Getter: Returns the value of the private field
@@ -82,17 +90,6 @@ public class Animal
             {
                 sound = value; // Otherwise, assign the sound
             }
-        }
-    }
-
-    // Inner class for health-related calculations
-    public class AnimalHealth
-    {
-        public bool HealthyWeight(double height, double weight)
-        {
-            // Check if the weight-to-height ratio is within a healthy range
-            var calc = height / weight;
-            return calc is >= .18 and <= .27;
         }
     }
 
@@ -135,11 +132,26 @@ public class Animal
     }
 
     // Getter method for the animal's name
-    public string GetName() => name; // Return the current name of the animal
+    public string GetName()
+    {
+        return name;
+        // Return the current name of the animal
+    }
 
-    // A method that prints the sound the animal makes
-    public void MakeSound()
+    // Added virtual so that this method cam be overridden by subclasses e.g. Dog
+    public virtual void MakeSound()
     {
         Console.WriteLine($"{Name} says {Sound}"); // Print the animal's name and sound
+    }
+
+    // Inner class for health-related calculations
+    public class AnimalHealth
+    {
+        public bool HealthyWeight(double height, double weight)
+        {
+            // Check if the weight-to-height ratio is within a healthy range
+            var calc = height / weight;
+            return calc is >= .18 and <= .27;
+        }
     }
 }
