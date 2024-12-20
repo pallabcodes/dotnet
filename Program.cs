@@ -524,7 +524,7 @@ internal class Program
         // private : Can't be accessed from another class
         // protected : Can be accessed by class and derived classes
 
-        SayHello();
+        // SayHello();
 
         // ----- PASSING BY VALUE -----
         // By default, values are passed into a method
@@ -534,8 +534,7 @@ internal class Program
         double x = 5;
         double y = 4;
 
-        Console.WriteLine("5 + 4 = {0}",
-            GetSum(x, y));
+        // Console.WriteLine("5 + 4 = {0}", GetSum(x, y));
 
         // Even though the value for x changed in
         // method it remains unchanged here
@@ -547,10 +546,10 @@ internal class Program
         // variable even without assigning a
         // value to it
 
-        // A parameter passed with out has its value assigned in the method
-        DoubleIt(15, out var solution);
+        // A parameter passed without has its value assigned in the method
+        // DoubleIt(15, out var solution);
 
-        Console.WriteLine("15 * 2 = {0}", solution);
+        // Console.WriteLine("15 * 2 = {0}", solution);
 
         // ----- PASS BY REFERENCE -----
         var num3 = 10;
@@ -558,7 +557,7 @@ internal class Program
 
         Console.WriteLine("Before Swap num1 : {0} num2 : {1}", num3, num4);
 
-        Swap(ref num3, ref num4);
+        // Swap(ref num3, ref num4);
 
         Console.WriteLine("After Swap num1 : {0} num2 : {1}", num3, num4);
 
@@ -567,27 +566,22 @@ internal class Program
         // of data of the same data type into a
         // method using params. You can also pass
         // in an array.
-        Console.WriteLine("1 + 2 + 3 = {0}",
-            GetSumMore(1, 2, 3));
+        // Console.WriteLine("1 + 2 + 3 = {0}", GetSumMore(1, 2, 3));
 
         // ----- NAMED PARAMETERS -----
         // You can pass values in any order if
         // you used named parameters
-        PrintInfo(zipCode: 15147,
-            name: "Derek Banas");
+        // PrintInfo(zipCode: 15147, name: "Derek Banas");
 
         // ----- METHOD OVERLOADING -----
         // You can define methods with the same
         // name that will be called depending on
         // what data is sent automatically
-        Console.WriteLine("5.0 + 4.0 = {0}",
-            GetSum2(5.0, 4.5));
+        // Console.WriteLine("5.0 + 4.0 = {0}", GetSum2(5.0, 4.5));
 
-        Console.WriteLine("5 + 4 = {0}",
-            GetSum2(5, 4));
+        // Console.WriteLine("5 + 4 = {0}", GetSum2(5, 4));
 
-        Console.WriteLine("5 + 4 = {0}",
-            GetSum2("5", "4"));
+        // Console.WriteLine("5 + 4 = {0}", GetSum2("5", "4"));
 
         // ---------- DATETIME & TIMESPAN ----------
         // Used to define dates
@@ -610,29 +604,29 @@ internal class Program
         Console.WriteLine("New Time : {0}", lunchTime.ToString());
 
         // ----- ENUM -----
-        var car1 = CarColor.Blue;
-        PaintCar(car1);
+        // var car1 = CarColor.Blue;
+        // PaintCar(car1);
 
         // Waits for input from the user if you run the consoleApp1.exe instead of instantly closing the executable is in bin/Debug/net8.0
         // Console.ReadLine();
 
         // Create a Rectangle
-        Rectangle rect1;
+        // Rectangle rect1;
 
         // Add values to it and run the Area method
-        rect1.length = 200;
-        rect1.width = 50;
-        Console.WriteLine("Area of rect1 : {0}", rect1.Area());
+        // rect1.length = 200;
+        // rect1.width = 50;
+        // Console.WriteLine("Area of rect1 : {0}", rect1.Area());
 
 
         // Use a constructor to create a Rectangle
-        var rect2 = new Rectangle(100, 40);
+        // var rect2 = new Rectangle(100, 40);
 
         // If you assign one Rectangle to another you are setting the values and not creating a reference
-        rect2 = rect1;
-        rect1.length = 33;
+        // rect2 = rect1;
+        // rect1.length = 33;
 
-        Console.WriteLine("rect2.length : {0}", rect2.length);
+        // Console.WriteLine("rect2.length : {0}", rect2.length);
 
         // ----- OBJECT ORIENTED PROGRAMMING -----
         // A class models real world objects by
@@ -678,138 +672,207 @@ internal class Program
         grover.Name = "Grover";
         grover.Sound = "Woof";
         grover.Sound2 = "Grrrrr";
-        
+
         // Demonstrate changing the protected field sound
         grover.Sound = "Wooooof";
         whiskers.MakeSound();
         grover.MakeSound();
-        
+
         // Define the AnimalIDInfo
         whiskers.SetAnimalIDInfo(12345, "Sally Smith");
         grover.SetAnimalIDInfo(12346, "Paul Brown");
 
         whiskers.GetAnimalIDInfo();
-        
+
         // Test the inner class
         var getHealth = new Animal.AnimalHealth();
-        
+
         // You can define 2 Animal objects but have
         // one actually be a Dog type. 
-        Animal monkey = new Animal()
+        var monkey = new Animal
         {
             Name = "Happy",
             Sound = "Eeeeee"
         };
 
-        Animal spot = new Dog()
+        Animal spot = new Dog
         {
             Name = "Spot",
             Sound = "Wooooff",
             Sound2 = "Geerrrr"
         };
-        
+
         // To ensure a method in `Dog` is called when invoked on an `Animal` reference, the method in the parent (`Animal`) must be marked as `virtual` or `abstract`, and the method in the subclass (`Dog`) should override it.
         spot.MakeSound();
-        
+
         // The above example demonstrates how polymorphism allows a subclass to override a superclass method, ensuring the correct method is called even when the subclass is referenced as the superclass type.
-        
-        
+
+
         Console.WriteLine("Is my animal healthy : {0}", getHealth.HealthyWeight(11, 46));
 
+        // We can store our shapes in
+        // a Shape array as long as it 
+        // contains subclasses of Shape
+        Shape[] shapes =
+        {
+            new Circle(5),
+            new Rectangle(4, 5)
+        };
 
-        // ----- NULLABLE TYPES -----
-        // Data types by default cannot have a
-        // value of null. Often null is needed
-        // when you are working with databases
-        // and you can create a null type by 
-        // adding a ? to the definition
-        int? randNum = null;
+        // Cycle through shapes and print the area
+        foreach (var s in shapes)
+        {
+            // Call the overridden method
+            s.GetInfo();
 
-        // Check for null
-        if (randNum == null) Console.WriteLine("randNum is null");
+            Console.WriteLine("{0} Area : {1:f2}", s.Name, s.Area());
 
-        // Another check for null
-        if (!randNum.HasValue) Console.WriteLine("randNum is null");
+            // You can use as to check if an
+            // object is of a specific type
+            var testCirc = s as Circle;
+            if (testCirc == null) Console.WriteLine("This isn't a Circle");
 
-        // 2:40:00 , start 4 (https://github.com/derekbanas/C-Sharp-Course/blob/main/C%23%20Code%203/Program.cs)
+            // You can use is to check the data
+            // type
+            if (s is Circle) Console.WriteLine("This isn't a Rectangle");
 
+            // Create a Vehicle object
+            var buick = new Vehicle("Buick",
+                4, 160);
+
+            // Check if Vehicle implements 
+            // IDrivable
+            if (buick is IDrivable)
+            {
+                buick.Move();
+                buick.Stop();
+            }
+            else
+            {
+                Console.WriteLine("The {0} can't be driven", buick.Brand);
+            }
+
+            // We are now modeling the act of
+            // picking up a remote, aiming it
+            // at the TV, clicking the power
+            // button and then watching as
+            // the TV turns on and off
+
+            // Pick up the TV remote
+            var TV = TVRemote.GetDevice();
+
+            // Create the power button
+            var powBut = new PowerButton(TV);
+
+            // Turn the TV on and off with each 
+            // press
+            powBut.Execute();
+            powBut.Undo();
+            powBut.Execute();
+            powBut.Undo();
+
+
+            // ----- NULLABLE TYPES -----
+            // Data types by default cannot have a
+            // value of null. Often null is needed
+            // when you are working with databases,
+            // and you can create a null type by 
+            // adding a ? to the definition
+            int? randNum = null;
+
+            // Check for null
+            if (randNum == null) Console.WriteLine("randNum is null");
+
+            // Another check for null
+            if (!randNum.HasValue) Console.WriteLine("randNum is null");
+
+
+            Console.ReadLine();
+        }
+
+        // You can store any class as a base
+        // class and call the subclass methods
+        // even if they don't exist in the base
+        // class by casting
+        object circ1 = new Circle(4);
+        var circ2 = (Circle)circ1;
+        Console.WriteLine("The {0} Area is {1:f2}", circ2.Name, circ2.Area());
         Console.ReadLine();
     }
 
-    private static void SayHello()
-    {
-        Console.WriteLine("Hello, World!");
-    }
 
-    private static double GetSum(double a, double b)
-    {
-        return a + b;
-    }
+    // private static void SayHello()
+    // {
+    //     Console.WriteLine("Hello, World!");
+    // }
 
-    private static void DoubleIt(int number, out int result)
-    {
-        result = number * 2;
-    }
+    // private static double GetSum(double a, double b)
+    // {
+    //     return a + b;
+    // }
 
-    private static void Swap(ref int a, ref int b)
-    {
-        var temp = a;
-        a = b;
-        b = temp;
-    }
+    // private static void DoubleIt(int number, out int result)
+    // {
+    //     result = number * 2;
+    // }
 
-    private static int GetSumMore(params int[] numbers)
-    {
-        var sum = 0;
-        foreach (var number in numbers) sum += number;
-        return sum;
-    }
+    // private static void Swap(ref int a, ref int b)
+    // {
+    //     (a, b) = (b, a);
+    // }
 
-    private static void PrintInfo(string name, int zipCode)
-    {
-        Console.WriteLine("Name: {0}, ZipCode: {1}", name, zipCode);
-    }
+    // private static int GetSumMore(params int[] numbers)
+    // {
+    //     var sum = 0;
+    //     foreach (var number in numbers) sum += number;
+    //     return sum;
+    // }
 
-    private static double GetSum2(double a, double b)
-    {
-        return a + b;
-    }
+    // private static void PrintInfo(string name, int zipCode)
+    // {
+    //     Console.WriteLine("Name: {0}, ZipCode: {1}", name, zipCode);
+    // }
 
-    private static int GetSum2(int a, int b)
-    {
-        return a + b;
-    }
+    // private static double GetSum2(double a, double b)
+    // {
+    //     return a + b;
+    // }
 
-    private static int GetSum2(string a, string b)
-    {
-        return int.Parse(a) + int.Parse(b);
-    }
+    // private static int GetSum2(int a, int b)
+    // {
+    //     return a + b;
+    // }
 
-    private static void PaintCar(CarColor color)
-    {
-        Console.WriteLine($"The car is painted {color}.");
-    }
+    // private static int GetSum2(string a, string b)
+    // {
+    //     return int.Parse(a) + int.Parse(b);
+    // }
+
+    // private static void PaintCar(CarColor color)
+    // {
+    //     Console.WriteLine($"The car is painted {color}.");
+    // }
 
     // ----- STRUCTS -----
     // A struct is a user defined type that contain multiple fields and methods
-    private struct Rectangle
-    {
-        public double length;
-        public double width;
-
-        // You can create a constructor method
-        // that will set the values for fields
-        public Rectangle(double l = 1, double w = 1)
-        {
-            length = l;
-            width = w;
-        }
-
-        public double Area()
-        {
-            return length * width;
-        }
-    }
+    // private struct Rectangle
+    // {
+    //     public double length;
+    //     public double width;
+    //
+    //     // You can create a constructor method
+    //     // that will set the values for fields
+    //     public Rectangle(double l = 1, double w = 1)
+    //     {
+    //         length = l;
+    //         width = w;
+    //     }
+    //
+    //     public double Area()
+    //     {
+    //         return length * width;
+    //     }
+    // }
 
     private enum CarColor
     {
@@ -819,3 +882,5 @@ internal class Program
         Black
     }
 }
+
+// 6 done
