@@ -661,9 +661,9 @@ internal class Program
         cat.Owner = "Derek";
 
         Console.WriteLine("{0} owner is {1}", cat.GetName(), cat.Owner);
-        
+
         // Get the read-only id number
-        Console.WriteLine("{0} shelter id is {1}",  cat.GetName(), cat.idNum);
+        Console.WriteLine("{0} shelter id is {1}", cat.GetName(), cat.idNum);
 
         // ensure static property is working by testing as below
         Console.WriteLine("# of Animals : {0}", Animal.NumOfAnimals);
@@ -681,7 +681,7 @@ internal class Program
 
         // Another check for null
         if (!randNum.HasValue) Console.WriteLine("randNum is null");
-        
+
         // 2:40:00 , start 4 (https://github.com/derekbanas/C-Sharp-Course/blob/main/C%23%20Code%203/Program.cs)
 
         Console.ReadLine();
