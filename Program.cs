@@ -258,7 +258,7 @@ internal class Program
         //     { { 5, 6 }, { 7, 8 } },
         //     { { 9, 10 }, { 11, 12 } }
         // };
-        
+
 
         // Loop through the 2D array
         for (var i = 0; i < array2D.GetLength(0); i++) // Loop through rows
@@ -613,9 +613,77 @@ internal class Program
         var car1 = CarColor.Blue;
         PaintCar(car1);
 
-        // Waits for input from the user if you run the
-        // ConsoleApp1.exe instead of instantly closing
-        // The executable is in bin/Debug/net6.0
+        // Waits for input from the user if you run the consoleApp1.exe instead of instantly closing the executable is in bin/Debug/net8.0
+        // Console.ReadLine();
+
+        // Create a Rectangle
+        Rectangle rect1;
+
+        // Add values to it and run the Area method
+        rect1.length = 200;
+        rect1.width = 50;
+        Console.WriteLine("Area of rect1 : {0}", rect1.Area());
+
+
+        // Use a constructor to create a Rectangle
+        var rect2 = new Rectangle(100, 40);
+
+        // If you assign one Rectangle to another you are setting the values and not creating a reference
+        rect2 = rect1;
+        rect1.length = 33;
+
+        Console.WriteLine("rect2.length : {0}", rect2.length);
+
+        // ----- OBJECT ORIENTED PROGRAMMING -----
+        // A class models real world objects by
+        // defining their attributes (fields) and
+        // capabilities (methods)
+        // Then unlike with structs you can 
+        // inherit from a class and create more
+        // specific subclass types
+
+        // Add a class Project -> Add Class
+
+        // Create an Animal object
+        // You could also assign values like
+        // fox.name = "Red"
+
+
+        var cat = new Animal();
+        cat.SetName("Whiskers"); // setter
+
+        // Set the public property
+        cat.Sound = "Meow";
+
+        Console.WriteLine("The cat is named {0} and says {1}", cat.GetName(), cat.Sound);
+
+        // Test auto generated getters and setters
+        cat.Owner = "Derek";
+
+        Console.WriteLine("{0} owner is {1}", cat.GetName(), cat.Owner);
+        
+        // Get the read-only id number
+        Console.WriteLine("{0} shelter id is {1}",  cat.GetName(), cat.idNum);
+
+        // ensure static property is working by testing as below
+        Console.WriteLine("# of Animals : {0}", Animal.NumOfAnimals);
+
+        // ----- NULLABLE TYPES -----
+        // Data types by default cannot have a
+        // value of null. Often null is needed
+        // when you are working with databases
+        // and you can create a null type by 
+        // adding a ? to the definition
+        int? randNum = null;
+
+        // Check for null
+        if (randNum == null) Console.WriteLine("randNum is null");
+
+        // Another check for null
+        if (!randNum.HasValue) Console.WriteLine("randNum is null");
+        
+        // 2:40:00 , start 4 (https://github.com/derekbanas/C-Sharp-Course/blob/main/C%23%20Code%203/Program.cs)
+
         Console.ReadLine();
     }
 
@@ -671,6 +739,27 @@ internal class Program
     private static void PaintCar(CarColor color)
     {
         Console.WriteLine($"The car is painted {color}.");
+    }
+
+    // ----- STRUCTS -----
+    // A struct is a user defined type that contain multiple fields and methods
+    private struct Rectangle
+    {
+        public double length;
+        public double width;
+
+        // You can create a constructor method
+        // that will set the values for fields
+        public Rectangle(double l = 1, double w = 1)
+        {
+            length = l;
+            width = w;
+        }
+
+        public double Area()
+        {
+            return length * width;
+        }
     }
 
     private enum CarColor
