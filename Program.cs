@@ -1,11 +1,23 @@
-﻿using System.Globalization;
+﻿using System.Collections;
+using System.Globalization;
 using System.Text;
+
+// Used for ArrayLists
+
+// Used for Dictionary
 
 namespace ConsoleApp1;
 
 internal class Program
 {
-    public static void Main(string[] args)
+    // Defines a delegate type 'Arithmetic' that represents methods accepting two double parameters and returning void.
+
+    public delegate void Arithmetic(double num1, double num2);
+
+    public delegate double doubleIt(double val);
+
+
+    private static void Main(string[] args)
     {
         Console.WriteLine("Hello World!");
         // Console.ForegroundColor = ConsoleColor.Black;
@@ -145,10 +157,10 @@ internal class Program
         Console.WriteLine("Replace String : {0}",
             randString.Replace("string", "sentence"));
 
-        // Compare strings and ignore case
-        // < 0 : str1 preceeds str2
-        // = : Zero
-        // > 0 : str2 preceeds str1
+        // Compare strings and ignore a case
+        // < 0: str1 preceeds str2
+        // =: Zero
+        // > 0: str2 preceeds str1
         Console.WriteLine("Compare A to B : {0}",
             string.Compare("A", "B", StringComparison.OrdinalIgnoreCase));
 
@@ -531,15 +543,13 @@ internal class Program
         // and not a reference to the variable passed
         // Changes made to those values do not affect the
         // variables outside the method
-        double x = 5;
-        double y = 4;
+        // double x = 5;
+        // double y = 4;
 
         // Console.WriteLine("5 + 4 = {0}", GetSum(x, y));
 
-        // Even though the value for x changed in
-        // method it remains unchanged here
-        Console.WriteLine("x = {0}",
-            x);
+        // Even though the value for x changed in method it remains unchanged here
+        // Console.WriteLine("x = {0}", x);
 
         // ----- OUT PARAMETER -----
         // You can pass a variable as an output
@@ -771,6 +781,432 @@ internal class Program
             powBut.Execute();
             powBut.Undo();
 
+            /*
+             * Thor Attacks Hulk and Deals 74 Damage
+             * Maximus Has 69 Health
+             *
+             * Hulk Attacks Thor and Deals 6 Damage
+             * Bob Has 6 Health
+             *
+             * Thor Attacks Hulk and Deals 48 Damage
+             * Maximus Has 21 Health
+             *
+             * Hulk Attacks Thor and Deals 48 Damage
+             * Bob Has -42 Health
+             *
+             * Thor has Died and Hulk is Victorious
+             *
+             * Game Over
+             * */
+
+            var thor = new Warrior("Thor", 100, 26, 10);
+            // Warrior loki = new Warrior("Loki", 100, 26, 10);
+
+            // Thor is more powerful, so let's treat him that way
+            // Loki will however have magic abilities
+            var loki = new MagicWarrior("Loki", 75, 20, 10, 50);
+
+            Battle.StartFight(thor, loki);
+
+            // ----- ARRAYLIST -----
+            // Collections can resize unlike arrays
+
+            // #region provides a way to collapse long blocks of code (it is just for folding, that's all)
+
+            #region ArrayList Code
+
+            // ArrayLists are resizable arrays that can hold multiple data types
+            var aList = new ArrayList();
+
+            aList.Add("Bob");
+            aList.Add(40);
+
+            // Number of items in a list
+            Console.WriteLine("Count: {0}", aList.Count);
+
+            // The capacity automatically increases as items are added
+            Console.WriteLine("Capacity: {0}", aList.Capacity);
+
+            var aList2 = new ArrayList();
+
+            // Add an object array
+            aList2.AddRange(new object[] { "Mike", "Sally", "Egg" });
+
+            // Add 1 array list to another
+            aList.AddRange(aList2);
+
+            // You can sort the list if the types are the same
+            aList2.Sort();
+            aList2.Reverse();
+
+            // Insert at the 2nd position
+            aList2.Insert(1, "Turkey");
+
+            // Get the 1st 2 items
+            var range = aList2.GetRange(0, 2);
+
+            /*
+             * // Remove the first item
+             * aList2.RemoveAt(0);
+             * // Remove the 1st 2 items
+             * aList2.RemoveRange(0, 2);
+             * */
+
+            // Search for a match starting at the provided index. You can also find the last index with LastIndexOf
+            Console.WriteLine("Turkey Index : {0}", aList2.IndexOf("Turkey", 0));
+
+            // Cycle through the list
+            foreach (var o in range) Console.WriteLine(o);
+
+            // Convert an ArrayList into a string array
+            string[] myArray = (string[])aList2.ToArray(typeof(string));
+
+            // Convert a string array into an ArrayList
+            string[] students = { "Bob", "Sally", "Sue" };
+            var listOfStudents = new ArrayList();
+            listOfStudents.AddRange(students);
+
+            #endregion
+
+
+            // ---------- DICTIONARIES ----------
+
+            #region Dictionary Code
+
+            // Dictionaries store key value pairs
+            // To create them define the data
+            // type for the key and the value
+            Dictionary<string, string> superheroes = new();
+
+            superheroes.Add("Clark Kent", "Superman");
+            superheroes.Add("Bruce Wayne", "Batman");
+            superheroes.Add("Barry West", "Flash");
+
+            // Remove a key / value
+            superheroes.Remove("Barry West");
+
+            // Number of keys
+            Console.WriteLine("Count : {0}",
+                superheroes.Count);
+
+            // Check if a key is present
+            Console.WriteLine("Clark Kent : {0}",
+                superheroes.ContainsKey("Clark Kent"));
+
+            // Get the value for the key and store it
+            // in a string
+
+            superheroes.TryGetValue("Clark Kent", out var test);
+
+            Console.WriteLine($"Clark Kent : {test}");
+
+            // Cycle through key value pairs
+            foreach (KeyValuePair<string, string> item in superheroes)
+                Console.WriteLine("{0} : {1}",
+                    item.Key,
+                    item.Value);
+
+            // Clear a dictionary
+            superheroes.Clear();
+
+            #endregion
+
+            // ---------- QUEUES ----------
+
+            #region Queue Code
+
+            // Queue 1st in 1st Out Collection
+
+            // Create a Queue
+            var queue = new Queue();
+
+            // Add values
+            queue.Enqueue(1);
+            queue.Enqueue(2);
+            queue.Enqueue(3);
+
+            // Is item in queue
+            Console.WriteLine("1 in Queue : {0}",
+                queue.Contains(1));
+
+            // Remove 1st item from queue
+            Console.WriteLine("Remove 1 : {0}",
+                queue.Dequeue());
+
+            // Look at 1st item but don't remove
+            Console.WriteLine("Peek 1 : {0}",
+                queue.Peek());
+
+            // Copy queue to array
+            object[] numArray = queue.ToArray();
+
+            // Print array
+            Console.WriteLine(string.Join(",", numArray));
+
+            // Print queue items
+            foreach (var o in queue) Console.WriteLine($"Queue : {o}");
+
+            // Clear the queue
+            queue.Clear();
+
+            #endregion
+
+            // ---------- STACKS ----------
+
+            #region Stack Code
+
+            // Stack Last in 1st Out Collection
+
+            // Create a stack
+            var stack = new Stack();
+
+            // Put items on the stack
+            stack.Push(1);
+            stack.Push(2);
+            stack.Push(3);
+
+            // Get but don't remove item
+            Console.WriteLine("Peek 1 : {0}", stack.Peek());
+
+            // Remove item
+            Console.WriteLine("Pop 1 : {0}", stack.Pop());
+
+            // Does item exist on stack?
+            Console.WriteLine("Contain 1 : {0}", stack.Contains(1));
+
+            // Copy stack to array
+            var numArray2 = stack.ToArray();
+
+            // Print array
+            Console.WriteLine(string.Join(",", numArray2));
+
+            // Print the stack
+            foreach (var o in stack) Console.WriteLine($"Stack : {o}");
+
+            #endregion
+
+            // Generic collections are type safe
+            // and provide performance benefits
+
+            // You define the data type when defining
+            // the generic. This is a dynamically
+            // resizing collection
+            List<Animal> animalList = new();
+
+            // You can also create a list of standard types like int
+            var numListAlt = new List<int>();
+
+            // Add an int
+            numListAlt.Add(24);
+
+            // Add Animals
+            animalList.Add(new Animal { Name = "Doug" });
+            animalList.Add(new Animal { Name = "Paul" });
+            animalList.Add(new Animal { Name = "Sally" });
+
+            // Insert in index 1
+            animalList.Insert(1, new Animal { Name = "Steve" });
+
+            // Remove index 1
+            animalList.RemoveAt(1);
+
+            // Get number of Animals
+            Console.WriteLine("Num of Animals : {0}", animalList.Count());
+
+            // Cycle through Animals
+            foreach (var a in animalList) Console.WriteLine(a.Name);
+
+            // You can also use Stack<T>, Queue<T>,
+            // Dictionary<TKey, TValue> like I covered
+            // previously
+
+            // Generic methods
+            // You can use the type parameter <int>
+            // if it can be inferred from the parameters
+            // passed (Can't do this if there are no
+            // parameters
+            int x = 5, y = 4;
+            // Animal.GetSum<int>(ref x, ref y);
+
+            // It works for strings as well
+            string strX = "5", strY = "4";
+            // Animal.GetSum(ref strX, ref strY);
+
+            // Use the generic struct
+            // var rec1 = new Rectangle<int>(20, 50);
+            // Console.WriteLine(rec1.GetArea());
+
+            // var rec2 = new Rectangle<string>("20", "50");
+            // Console.WriteLine(rec2.GetArea());
+
+            // Delegates allow you to reference methods
+            // inside a delegate object. The delegate
+            // object can then be passed to other
+            // methods that can call the methods assigned
+            // to the delegate. It can also stack methods
+            // that are called in the specified order
+
+            // so, these add, sub, addSub are nothing but method that will same parameter types and returnType as Arithmetic 
+            Arithmetic add, sub, addSub;
+
+            // Assign just the Add method
+            add = Add;
+
+            // Assign just the Subtract method
+            sub = Subtract;
+
+            // Assign Add and Sub
+            addSub = add + sub;
+
+            // You could also subtract a method
+            // sub = addSub - add;
+
+            // Print out results
+            Console.WriteLine($"Add {6} & {10}");
+            add(6, 10);
+
+            // Call both methods
+            Console.WriteLine($"Add & Subtract {10} & {4}");
+            addSub(10, 4);
+
+            // Like we did with predicates earlier
+            // Lambda expressions allow you to 
+            // use anonymous methods that define
+            // the input parameters on the left 
+            // and the code to execute on the right
+
+            // Assign a Lambda to the delegate
+            doubleIt dblIt = x => x * 2;
+            Console.WriteLine($"5 * 2 = {dblIt(5)}");
+
+            // You don't have to use delegates though
+            // Here we'll search through a list to 
+            // find all the even numbers
+            var numList = new List<int> { 1, 9, 2, 6, 3 };
+
+            // Put the number in the list if the 
+            // condition is true
+            var evenList = numList.Where(a => a % 2 == 0).ToList();
+
+            foreach (var j in evenList)
+                Console.WriteLine(j);
+
+            // Add values in a range to a list
+            var rangeList = numList.Where(x => x > 2 || x < 9).ToList();
+
+            foreach (var k in rangeList)
+                Console.WriteLine(k);
+
+            // Find the number of heads and tails in
+            // a list 1 = H, 2 = T
+
+            // Generate our list
+            var flipList = new List<int>();
+            var i = 0;
+            var rnd = new Random();
+            while (i < 100)
+            {
+                flipList.Add(rnd.Next(1, 3));
+                i++;
+            }
+
+            // Print out the heads and tails
+            Console.WriteLine("Heads : {0}",
+                flipList.Where(a => a == 1).ToList().Count());
+            Console.WriteLine("Tails : {0}",
+                flipList.Where(a => a == 2).ToList().Count());
+
+            // Find all names starting with s
+            var nameList = new List<string> { "Doug", "Sally", "Sue" };
+
+            var sNameList = nameList.Where(x => x.StartsWith("S"));
+
+            foreach (var m in sNameList)
+                Console.WriteLine(m);
+
+            // ---------- SELECT ----------
+            // Select allows us to execute a function 
+            // on each item in a list
+
+            // Generate a list from 1 to 10
+            var oneTo10 = new List<int>();
+            oneTo10.AddRange(Enumerable.Range(1, 10));
+
+            var squares = oneTo10.Select(x => x * x);
+
+            foreach (var l in squares)
+                Console.WriteLine(l);
+
+            // ---------- ZIP ----------
+            // Zip applies a function to two lists 
+            // Add values in 2 lists together
+            var listOne = new List<int>(new[] { 1, 3, 4 });
+            var listTwo = new List<int>(new[] { 4, 6, 8 });
+
+            var sumList = listOne.Zip(listTwo, (x, y) => x + y).ToList();
+
+            foreach (var n in sumList)
+                Console.WriteLine(n);
+
+            // ---------- AGGREGATE ----------
+            // Aggregate performs an operation on 
+            // each item in a list and carries the 
+            // results forward 
+
+            // Sum values in a list
+            var numList2 = new List<int> { 1, 2, 3, 4, 5 };
+            Console.WriteLine("Sum : {0}",
+                numList2.Aggregate((a, b) => a + b));
+
+            // ---------- AVERAGE ----------
+            // Get the average of a list of values
+            var numList3 = new List<int> { 1, 2, 3, 4, 5 };
+
+            // AsQueryable allows you to manipulate the
+            // collection with the Average function
+            Console.WriteLine("AVG : {0}",
+                numList3.AsQueryable().Average());
+
+            // ---------- ALL ----------
+            // Determines if all items in a list
+            // meet a condition
+            var numList4 = new List<int> { 1, 2, 3, 4, 5 };
+
+            Console.WriteLine("All > 3 : {0}",
+                numList4.All(x => x > 3));
+
+            // ---------- ANY ----------
+            // Determines if any items in a list
+            // meet a condition
+            var numList5 = new List<int> { 1, 2, 3, 4, 5 };
+
+            Console.WriteLine("Any > 3 : {0}",
+                numList5.Any(x => x > 3));
+
+            // ---------- DISTINCT ----------
+            // Eliminates duplicates from a list
+            var numList6 = new List<int> { 1, 2, 3, 2, 3 };
+
+            Console.WriteLine("Distinct : {0}",
+                string.Join(", ", numList6.Distinct()));
+
+            // ---------- EXCEPT ----------
+            // Receives 2 lists and returns values not
+            // found in the 2nd list
+            var numList7 = new List<int> { 1, 2, 3, 2, 3 };
+            var numList8 = new List<int> { 3 };
+
+            Console.WriteLine("Except : {0}",
+                string.Join(", ", numList7.Except(numList8)));
+
+            // ---------- INTERSECT ----------
+            // Receives 2 lists and returns values that
+            // both lists have
+            var numList9 = new List<int> { 1, 2, 3, 2, 3 };
+            var numList10 = new List<int> { 2, 3 };
+
+            Console.WriteLine("Intersect : {0}", string.Join(", ", numList9.Intersect(numList10)));
+
 
             // ----- NULLABLE TYPES -----
             // Data types by default cannot have a
@@ -790,6 +1226,7 @@ internal class Program
             Console.ReadLine();
         }
 
+
         // You can store any class as a base
         // class and call the subclass methods
         // even if they don't exist in the base
@@ -798,6 +1235,41 @@ internal class Program
         var circ2 = (Circle)circ1;
         Console.WriteLine("The {0} Area is {1:f2}", circ2.Name, circ2.Area());
         Console.ReadLine();
+    }
+
+    public static void Add(double num1, double num2)
+    {
+        Console.WriteLine($"{num1} + {num2} = {num1 + num2}");
+    }
+
+    public static void Subtract(double num1, double num2)
+    {
+        Console.WriteLine($"{num1} - {num2} = {num1 - num2}");
+    }
+
+    // You can also create generic structs and classes in this same way
+    public struct RectangleGeneric<T>
+    {
+        // Generic fields
+
+        // Generic properties
+        public T Width { get; set; }
+
+        public T Length { get; set; }
+
+        // Generic constructor
+        public RectangleGeneric(T w, T l)
+        {
+            Width = w;
+            Length = l;
+        }
+
+        public string GetArea()
+        {
+            var dblWidth = Convert.ToDouble(Width);
+            var dblLength = Convert.ToDouble(Length);
+            return string.Format($"{Width} * {Length} = {dblWidth * dblLength}");
+        }
     }
 
 
