@@ -17,7 +17,7 @@ internal class Program
     public delegate double doubleIt(double val);
 
 
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         Console.WriteLine("Hello World!");
         // Console.ForegroundColor = ConsoleColor.Black;
@@ -1206,6 +1206,25 @@ internal class Program
             var numList10 = new List<int> { 2, 3 };
 
             Console.WriteLine("Intersect : {0}", string.Join(", ", numList9.Intersect(numList10)));
+
+            var user = new BaseController();
+            var admin = new AdminController();
+
+            try
+            {
+                Console.WriteLine("User Controller:");
+                // The validation logic will be triggered by calling AttributeEnforcer.InvokeMethodAsync
+                Console.WriteLine(await AttributeEnforcer.InvokeMethodAsync(user, "GetData"));
+                Console.WriteLine(await AttributeEnforcer.InvokeMethodAsync(user, "ProcessDataAsync"));
+
+                Console.WriteLine("\nAdmin Controller:");
+                Console.WriteLine(await AttributeEnforcer.InvokeMethodAsync(admin, "GetData"));
+                Console.WriteLine(await AttributeEnforcer.InvokeMethodAsync(admin, "ProcessDataAsync"));
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
 
 
             // ----- NULLABLE TYPES -----
