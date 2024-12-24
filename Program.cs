@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Globalization;
+﻿using System.Globalization;
+using System.Collections;
 using System.Text;
+using System.Xml.Serialization;
 
+// Used to serialize into XML
+// using System.Runtime.Serialization.Formatters.Binary; // @Deprecated
 
-// Used for ArrayLists
-
-// Used for Dictionary
 
 namespace ConsoleApp1;
 
@@ -1272,11 +1272,237 @@ internal class Program
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            for (var k = 0; k < 10; k++)
+            for (var k = 0; k < 5; k++) Console.WriteLine(k);
+
+            // Get access to the current directory
+            var currDir = new DirectoryInfo(".");
+
+            // Get access to a directory with absolute path
+            var gotoDir = new DirectoryInfo(@"C:\Users");
+
+            // Get the directory path
+            Console.WriteLine(gotoDir.FullName);
+
+            // Get the directory name
+            Console.WriteLine(gotoDir.Name);
+
+            // Get the parent directory
+            Console.WriteLine(gotoDir.Parent);
+
+            // What type is it
+            Console.WriteLine(gotoDir.Attributes);
+
+            // When was it created?
+            Console.WriteLine(gotoDir.CreationTime);
+
+            // Create a directory
+            var dataDir = new DirectoryInfo(@"C:\Users\derek\C#Data");
+            dataDir.Create();
+
+            // Delete a directory
+            // .Delete(@"C:\Users\derekbanas\C#Data");
+
+            // ----- SIMPLE FILE READING & WRITING -----
+
+            // Write a string array to a text file
+            string[] contents =
             {
-                Console.WriteLine(k);
-                
+                "Bob Smith",
+                "Sally Smith",
+                "Robert Smith"
+            };
+
+            var textFilePath = @"C:\Users\derek\C#Data\testfile1.txt";
+            ;
+            // Write the array
+            File.WriteAllLines(textFilePath,
+                contents);
+
+            // Read strings from array
+            foreach (var cust in File.ReadAllLines(textFilePath)) Console.WriteLine($"Customer : {cust}");
+
+            // ----- GETTING FILE DATA -----
+
+            var myDataDir = new DirectoryInfo(@"C:\Users\derek\C#Data");
+
+            // Get all txt files 
+            FileInfo[] txtFiles = myDataDir.GetFiles("*.txt",
+                SearchOption.AllDirectories);
+
+            // Number of matches
+            Console.WriteLine("Matches : {0}",
+                txtFiles.Length);
+
+            foreach (var file in txtFiles)
+            {
+                // Get file name
+                Console.WriteLine(file.Name);
+
+                // Get bytes in file
+                Console.WriteLine(file.Length);
             }
+
+            // ----- FILESTREAMS -----
+            // FileStream is used to read and write a byte
+            // or an array of bytes. 
+
+            var textFilePath2 = @"C:\Users\derek\C#Data\testfile2.txt";
+
+            // Create and open a file
+            var fs = File.Open(textFilePath2,
+                FileMode.Create);
+
+            const string randomString = "This is a random string";
+
+            // Convert to a byte array
+            var rsByteArray = Encoding.Default.GetBytes(randomString);
+
+            // Write to file by defining the byte array,
+            // the index to start writing from and length
+            fs.Write(rsByteArray, 0,
+                rsByteArray.Length);
+
+            // Move back to the beginning of the file
+            fs.Position = 0;
+
+            // Create a byte array to hold file data
+            var fileByteArray = new byte[rsByteArray.Length];
+
+            // Put bytes in an array
+            for (var m = 0; m < rsByteArray.Length; m++) fileByteArray[m] = (byte)fs.ReadByte();
+
+            // Convert from bytes to string and output
+            Console.WriteLine(Encoding.Default.GetString(fileByteArray));
+
+            // Close the FileStream
+            fs.Close();
+
+            // ----- STREAMWRITER / STREAMREADER -----
+            // These are best for reading and writing strings
+
+            var textFilePath3 = @"C:\Users\derek\C#Data\testfile3.txt";
+
+            // Create a text file
+            var sw = File.CreateText(textFilePath3);
+
+            // Write to a file without a newline
+            sw.Write("This is a random ");
+
+            // Write to a file with a newline
+            sw.WriteLine("sentence.");
+
+            // Write another
+            sw.WriteLine("This is another sentence.");
+
+            // Close the StreamWriter
+            sw.Close();
+
+            // Open the file for reading
+            var sr = File.OpenText(textFilePath3);
+
+            // Peek returns the next character as a unicode
+            // number. Use Convert to change to a character
+            Console.WriteLine("Peek : {0}",
+                Convert.ToChar(sr.Peek()));
+
+            // Read to a newline
+            Console.WriteLine("1st String : {0}",
+                sr.ReadLine());
+
+            // Read to the end of the file starting
+            // where you left off reading
+            Console.WriteLine("Everything : {0}",
+                sr.ReadToEnd());
+
+            sr.Close();
+
+            // ----- BINARYWRITER / BINARYREADER -----
+            // Used to read and write data types 
+            var textFilePath4 = @"C:\Users\derek\C#Data\testfile4.dat";
+
+            // Get the file
+            var datFile = new FileInfo(textFilePath4);
+
+            // Open the file
+            var bw = new BinaryWriter(datFile.OpenWrite());
+
+            // Data to save to the file
+            var randText = "Random Text";
+            var myAge = 42;
+            var height = 6.25;
+
+            // Write data to a file
+            bw.Write(randText);
+            bw.Write(myAge);
+            bw.Write(height);
+
+            bw.Close();
+
+            // Open file for reading
+            var br = new BinaryReader(datFile.OpenRead());
+
+            // Output data
+            Console.WriteLine(br.ReadString());
+            Console.WriteLine(br.ReadInt32());
+            Console.WriteLine(br.ReadDouble());
+
+            br.Close();
+
+            // Create an instance of AnimalSerialized
+            AnimalSerialized animal = new AnimalSerialized("Bowser", 45, 25)
+            {
+                AnimalID = 1
+            };
+
+            // Serialize the object to an XML file
+            XmlSerializer serializer = new XmlSerializer(typeof(AnimalSerialized));
+            using (TextWriter writer = new StreamWriter("AnimalData.xml"))
+            {
+                serializer.Serialize(writer, animal);
+            }
+
+            // Now, let's delete the object reference (for testing)
+            animal = null;
+
+            // Deserialize the object from the XML file back to an instance of AnimalSerialized
+            using (TextReader reader = new StreamReader("AnimalData.xml"))
+            {
+                animal = (AnimalSerialized)serializer.Deserialize(reader);
+            }
+
+            // Output the deserialized object
+            Console.WriteLine(animal.ToString());
+
+            // Example for saving a list of animals
+            List<AnimalSerialized> animals = new List<AnimalSerialized>
+            {
+                new AnimalSerialized("Mario", 60, 30) { AnimalID = 2 },
+                new AnimalSerialized("Luigi", 55, 24) { AnimalID = 3 },
+                new AnimalSerialized("Peach", 40, 20) { AnimalID = 4 }
+            };
+
+            // Serialize the list of animals to an XML file
+            using (TextWriter writer = new StreamWriter("AnimalsList.xml"))
+            {
+                XmlSerializer listSerializer = new XmlSerializer(typeof(List<AnimalSerialized>));
+                listSerializer.Serialize(writer, animals);
+            }
+
+            // Now, let's read back the list of animals from the XML file
+            List<AnimalSerialized> deserializedAnimals;
+            using (TextReader reader = new StreamReader("AnimalsList.xml"))
+            {
+                XmlSerializer listDeserializer = new XmlSerializer(typeof(List<AnimalSerialized>));
+                deserializedAnimals = (List<AnimalSerialized>)listDeserializer.Deserialize(reader);
+            }
+
+            // Output all deserialized animals
+            foreach (var a in deserializedAnimals)
+            {
+                Console.WriteLine(a.ToString());
+            }
+
+            Console.ReadLine();
 
 
             // ----- NULLABLE TYPES -----
