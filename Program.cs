@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 
+
 // Used for ArrayLists
 
 // Used for Dictionary
@@ -119,6 +120,51 @@ internal class Program
 
         // Add commas and decimals
         Console.WriteLine("Commas : {0:n4}", 2300);
+
+        Console.WriteLine("FARM BELOW");
+
+        // We’ll learn about IEnumerable, Indexer, Enumerator, Operator Overloading, Custom Casting, Anonymous Types and more
+
+        // Create an AnimalFarm with 4 animals
+        // Create an AnimalFarm with 4 animals
+        var farm = new AnimalFarm();
+
+        // Add animals at indices 0, 1, 2, 3
+        farm[0] = new Animal("Cow");
+        farm[1] = new Animal("Horse");
+        farm[2] = new Animal("Sheep");
+        farm[3] = new Animal("Chicken");
+
+        // Iterate through the AnimalFarm using foreach
+        foreach (var animal in farm) Console.WriteLine(animal.Name); // Print each animal name
+
+        Console.WriteLine($"\nTotal animals: {farm.Count}");
+
+
+        // Testing operator overloading
+        var box1 = new Box(2, 3, 4);
+        var box2 = new Box(5, 6, 7);
+        var box3 = box1 + box2;
+
+        // Converts the box to a string with `ToString` method
+        Console.WriteLine($"Box 3 : {box3}");
+        Console.WriteLine($"Box Int : {(int)box3}");
+        // Convert an int into a Box
+        var box4 = (Box)4;
+        Console.WriteLine($"Box 4 : {(Box)4}");
+
+        // Sometimes you want to build a simple class that contains fields and Anonymous types are great for that
+        var shopkins = new { Name = "Shopkins", Price = 4.99 };
+
+        Console.WriteLine("{0} cost ${1}", shopkins.Name, shopkins.Price);
+
+        // Anonymous types can also be stored in an array
+        var toyArray = new[] { new { Name = "Yo-Kai Pack", Price = 4.99 }, new { Name = "Legos", Price = 9.99 } };
+
+        // You can loop through the array
+        foreach (var item in toyArray) Console.WriteLine("{0} costs ${1}", item.Name, item.Price);
+        ;
+
 
         // ---------- STRINGS ----------
         // Strings store a series of characters
@@ -1226,6 +1272,12 @@ internal class Program
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
+            for (var k = 0; k < 10; k++)
+            {
+                Console.WriteLine(k);
+                
+            }
+
 
             // ----- NULLABLE TYPES -----
             // Data types by default cannot have a
@@ -1240,7 +1292,6 @@ internal class Program
 
             // Another check for null
             if (!randNum.HasValue) Console.WriteLine("randNum is null");
-
 
             Console.ReadLine();
         }

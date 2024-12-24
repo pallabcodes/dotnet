@@ -144,6 +144,12 @@ public class Animal
         Console.WriteLine($"{Name} says {Sound}"); // Print the animal's name and sound
     }
 
+    public override string ToString()
+    {
+        return Name;
+        // ToString returns the animal's name
+    }
+
     // Inner class for health-related calculations
     public class AnimalHealth
     {

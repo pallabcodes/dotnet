@@ -1,4 +1,7 @@
-> c# interface is to be used to hold contracts i.e. methods
+> c# interface is to be used to hold contracts i.e. methods 
+> 
+> LINQ and THREADS are skipped for now 
+
 
 ```c#
 // C# Struct Example
