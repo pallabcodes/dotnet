@@ -2,9 +2,10 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 public class RandomHealthCheck : IHealthCheck
 {
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+        CancellationToken cancellationToken = default)
     {
-        int responseTimeInMs = Random.Shared.Next(300);
+        var responseTimeInMs = Random.Shared.Next(300);
         if (responseTimeInMs < 100)
             return Task.FromResult(HealthCheckResult.Healthy($"Response time is excellent: {responseTimeInMs}ms"));
         if (responseTimeInMs < 200)

@@ -1,10 +1,9 @@
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using WatchDog;
-using HealthChecks.UI.Client;
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +29,7 @@ builder.Services.AddSwaggerGen(options =>
 
 // Add Health Checks
 builder.Services.AddHealthChecks()
-    .AddCheck<RandomHealthCheck>("Random Health Check", failureStatus: HealthStatus.Degraded);
+    .AddCheck<RandomHealthCheck>("Random Health Check", HealthStatus.Degraded);
 
 // Configure HealthChecks UI
 builder.Services.AddHealthChecksUI(options =>

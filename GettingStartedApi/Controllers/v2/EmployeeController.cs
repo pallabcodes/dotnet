@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GettingStartedApiApp.Controllers.v2;
@@ -12,6 +11,6 @@ public class EmployeeController : ControllerBase
     [HttpGet]
     public IEnumerable<string> Get()
     {
-        return new[] { "value1", "value2" };
+        return ["value1", "value2"];
     }
 }
