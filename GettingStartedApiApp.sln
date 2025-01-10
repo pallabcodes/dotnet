@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStartedApi", "GettingStartedApi\GettingStartedApi.csproj", "{DCFDCD38-AB77-4B03-B447-EFEBAD7ED055}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Application", "Movies.Application\Movies.Application.csproj", "{7BA30D41-A4BF-4999-938C-14E4FDFA8446}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api", "Movies.Api\Movies.Api.csproj", "{389CEF30-BED4-49FF-BA2C-36F63F2FE465}"
@@ -14,10 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DCFDCD38-AB77-4B03-B447-EFEBAD7ED055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DCFDCD38-AB77-4B03-B447-EFEBAD7ED055}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DCFDCD38-AB77-4B03-B447-EFEBAD7ED055}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DCFDCD38-AB77-4B03-B447-EFEBAD7ED055}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7BA30D41-A4BF-4999-938C-14E4FDFA8446}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BA30D41-A4BF-4999-938C-14E4FDFA8446}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BA30D41-A4BF-4999-938C-14E4FDFA8446}.Release|Any CPU.ActiveCfg = Release|Any CPU
