@@ -5,7 +5,7 @@ namespace GettingStartedApiApp.Controllers;
 
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 public class UserController(ILogger<UserController> logger) : ControllerBase
 {
     [HttpGet]
@@ -30,7 +30,7 @@ public class UserController(ILogger<UserController> logger) : ControllerBase
         //     logger.LogError(ex, "An exception occurred while getting the user");
         //     return BadRequest("The Index is out of range");
         // }
-        
+
         return $"Random Number: {Random.Shared.Next(1, 101)} for id {id}";
     }
 
