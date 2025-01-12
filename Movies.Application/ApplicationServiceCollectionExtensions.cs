@@ -6,6 +6,9 @@ namespace Movies.Application;
 
 public static class ApplicationServiceCollectionExtensions
 {
+    /**
+     * N.B: every class i.e. being registered through `IServiceCollection` available on builder (refer program.cs) as builder.Service
+     */
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddSingleton<IMovieRepository, MovieRepository>();

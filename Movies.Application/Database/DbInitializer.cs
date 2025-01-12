@@ -8,7 +8,9 @@ public class DbInitializer(IDbConnectionFactory dbConnectionFactory)
 
     public async Task InitializeAsync()
     {
+        // TODO: What is this `using` does ?
         using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
         await connection.ExecuteAsync("""
                                       CREATE TABLE IF NOT EXISTS movies (
                                       id uuid PRIMARY KEY,
@@ -18,6 +20,13 @@ public class DbInitializer(IDbConnectionFactory dbConnectionFactory)
                                       """);
         await connection.ExecuteAsync("""
                                       CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS movies_slug_idx ON movies using btree(slug);
+                                      """);
+        
+
+        await connection.ExecuteAsync("""
+                                      CREATE TABLE IF NOT EXISTS genres (
+                                      movieId uuid references movies(id),
+                                      name TEXT NOT NULL);
                                       """);
     }
 }
