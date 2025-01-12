@@ -1,12 +1,26 @@
+using System.Text.RegularExpressions;
+
 namespace Movies.Application.Models;
 
-public abstract class Movie
+public class Movie
 {
     public required Guid Id { get; init; }
+    public required string Title { get; set; }
 
-    public required string Title { get; init; }
+    public string Slug => GenerateSlug();
 
-    public required int YearOfRelease { get; init; }
-
+    public required int YearOfRelease { get; set; }
     public required List<string> Genres { get; init; } = new();
+
+    private string GenerateSlug()
+    {
+        var sluggedTitle = SlugRegex().Replace(Title, "").Replace(" ", "-");
+        return $"{sluggedTitle}-{YearOfRelease}";
+    }
+
+    // Use a static method to create the regex
+    private static Regex SlugRegex()
+    {
+        return new Regex("[^0-9A-Za-z _-]", RegexOptions.Compiled | RegexOptions.NonBacktracking);
+    }
 }

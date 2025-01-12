@@ -1,5 +1,6 @@
 namespace Movies.Contracts.Requests;
 
+// This is a DTO class
 public class CreateMovieRequest
 {
     // required ensures that this property must be initialized when creating an instance of the CreateMovieRequest class.
@@ -9,7 +10,6 @@ public class CreateMovieRequest
 
     // IEnumerable is an interface that can be used to represent a collection e.g. new List<string>, string[],HashSet<string> or any collection
     // so, here it could be a collection with element must be string
-
 
     // N.B: How to properly initialize an empty collection? 
 
