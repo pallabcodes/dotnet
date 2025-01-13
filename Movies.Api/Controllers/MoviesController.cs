@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
-using Movies.Application.Repositories;
+using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
 namespace Movies.Api.Controllers;
 
 [ApiController]
-public class MoviesController(IMovieRepository movieRepository) : ControllerBase
+public class MoviesController(IMovieService movieService) : ControllerBase
 {
-    private readonly IMovieRepository _movieRepository = movieRepository;
+    private readonly IMovieService _movieService = movieService;
 
     [HttpPost(ApiEndpoints.Movies.Create)]
     // Similar to Next.js @body() parametrized decorator, [FromBody] does exactly the same
@@ -23,7 +23,7 @@ public class MoviesController(IMovieRepository movieRepository) : ControllerBase
         // Now, I know there is an extension method i.e., added on CreateMovieRequest's instance i.e., request; so that method will be available on the instance i.e., request off course, which is what happens below  
         var movie = request.MapToMovie();
 
-        await _movieRepository.CreateAsync(movie);
+        await _movieService.CreateAsync(movie);
 
         return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
 
@@ -35,8 +35,8 @@ public class MoviesController(IMovieRepository movieRepository) : ControllerBase
     public async Task<IActionResult> Get([FromRoute] string idOrSlug)
     {
         var movie = Guid.TryParse(idOrSlug, out var id)
-            ? await _movieRepository.GetByIdAsync(id)
-            : await _movieRepository.GetBySlugAsync(idOrSlug); // this will return an instance of Movie
+            ? await _movieService.GetByIdAsync(id)
+            : await _movieService.GetBySlugAsync(idOrSlug); // this will return an instance of Movie
 
         if (movie is null) return NotFound();
 
@@ -49,7 +49,7 @@ public class MoviesController(IMovieRepository movieRepository) : ControllerBase
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     public async Task<IActionResult> GetAll()
     {
-        var movies = await _movieRepository.GetAllAsync(); // this return
+        var movies = await _movieService.GetAllAsync(); // this return
         var response = movies.MapToResponse();
 
         return Ok(response);
@@ -59,8 +59,8 @@ public class MoviesController(IMovieRepository movieRepository) : ControllerBase
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request)
     {
         var movie = request.MapToMovie(id);
-        var updated = await _movieRepository.UpdateAsync(movie);
-        if (!updated) return NotFound();
+        var updatedMovie = await _movieService.UpdateAsync(movie);
+        if (updatedMovie is null) return NotFound();
         var response = movie.MapToResponse();
         return Ok(response);
     }
@@ -68,7 +68,7 @@ public class MoviesController(IMovieRepository movieRepository) : ControllerBase
     [HttpDelete(ApiEndpoints.Movies.Delete)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var deleted = await _movieRepository.DeleteAsync(id);
+        var deleted = await _movieService.DeleteAsync(id);
         if (!deleted) return NotFound();
         return Ok();
     }
