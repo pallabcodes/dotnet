@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
@@ -10,6 +11,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 {
     private readonly IMovieService _movieService = movieService;
 
+    [Authorize(AuthConstants.TrustedMemberPolicyName)]
     [HttpPost(ApiEndpoints.Movies.Create)]
     // Similar to Next.js @body() parametrized decorator, [FromBody] does exactly the same
     // This means that when a POST request is made to the "/api/movies" route, ASP.NET Core will deserialize the body of the request into an instance of CreateMovieRequest automatically.
@@ -31,6 +33,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         // return Created($"{ApiEndpoints.Movies.Create}/{movie.Id}", movie);
     }
 
+    [AllowAnonymous]
     [HttpGet(ApiEndpoints.Movies.Get)]
     public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
     {
@@ -46,6 +49,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         return Ok(response);
     }
 
+    // [Authorize] -> This means anyone (or any role) can access this controller
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     public async Task<IActionResult> GetAll(CancellationToken token)
     {
@@ -55,8 +59,10 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(AuthConstants.TrustedMemberPolicyName)]
     [HttpPut(ApiEndpoints.Movies.Update)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request, CancellationToken token)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request,
+        CancellationToken token)
     {
         var movie = request.MapToMovie(id);
         var updatedMovie = await _movieService.UpdateAsync(movie, token);
@@ -65,6 +71,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpDelete(ApiEndpoints.Movies.Delete)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {

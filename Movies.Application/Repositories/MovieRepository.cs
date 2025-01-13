@@ -22,7 +22,8 @@ public class MovieRepository(IDbConnectionFactory dbConnectionFactory) : IMovieR
                 await connection.ExecuteAsync(new CommandDefinition("""
                                                                     INSERT INTO genres (movieId, name) 
                                                                     values (@MovieId, @Name)
-                                                                    """, new { MovieId = movie.Id, Name = genre }, cancellationToken: token));
+                                                                    """, new { MovieId = movie.Id, Name = genre },
+                    cancellationToken: token));
 
         transaction.Commit();
 
@@ -50,12 +51,14 @@ public class MovieRepository(IDbConnectionFactory dbConnectionFactory) : IMovieR
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
         var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
-            new CommandDefinition("""select * from movies where slug = @slug""", new { slug }, cancellationToken: token));
+            new CommandDefinition("""select * from movies where slug = @slug""", new { slug },
+                cancellationToken: token));
 
         if (movie is null) return null;
 
         var genres = await connection.QueryAsync<string>(
-            new CommandDefinition("""select name from genres where movieid = @id""", new { id = movie.Id }, cancellationToken: token));
+            new CommandDefinition("""select name from genres where movieid = @id""", new { id = movie.Id },
+                cancellationToken: token));
 
         foreach (var genre in genres) movie.Genres.Add(genre);
 
@@ -85,7 +88,8 @@ public class MovieRepository(IDbConnectionFactory dbConnectionFactory) : IMovieR
         foreach (var genre in movie.Genres)
             await connection.ExecuteAsync(new CommandDefinition("""
                                                                 insert into genres (movieId, name) values (@MovieId, @Name)
-                                                                """, new { MovieId = movie.Id, Name = genre }, cancellationToken: token));
+                                                                """, new { MovieId = movie.Id, Name = genre },
+                cancellationToken: token));
 
         var result = await connection.ExecuteAsync(new CommandDefinition("""
                                                                          update movies set slug = @Slug, title = @Title, yearofrelease = @YearOfRelease where id = @Id
@@ -116,6 +120,7 @@ public class MovieRepository(IDbConnectionFactory dbConnectionFactory) : IMovieR
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
         return await connection.ExecuteScalarAsync<bool>(
-            new CommandDefinition("""select count(1) from movies where id = @id""", new { id }, cancellationToken: token));
+            new CommandDefinition("""select count(1) from movies where id = @id""", new { id },
+                cancellationToken: token));
     }
 }

@@ -17,7 +17,7 @@ public class MovieService : IMovieService
 
     public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default)
     {
-        await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
+        await _movieValidator.ValidateAndThrowAsync(movie, token);
         return await _movieRepository.CreateAsync(movie, token);
     }
 
@@ -38,7 +38,7 @@ public class MovieService : IMovieService
 
     public async Task<Movie?> UpdateAsync(Movie movie, CancellationToken token = default)
     {
-        await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
+        await _movieValidator.ValidateAndThrowAsync(movie, token);
         var movieExists = await _movieRepository.ExistsByIdAsync(movie.Id, token);
         if (!movieExists) return null;
         await _movieRepository.UpdateAsync(movie);
