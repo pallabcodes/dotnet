@@ -5,7 +5,7 @@ namespace Movies.Application.Database;
 
 public interface IDbConnectionFactory
 {
-    Task<IDbConnection> CreateConnectionAsync();
+    Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default);
 }
 
 public class NpgSqlConnectionFactory : IDbConnectionFactory
@@ -18,10 +18,10 @@ public class NpgSqlConnectionFactory : IDbConnectionFactory
     }
 
 
-    public async Task<IDbConnection> CreateConnectionAsync()
+    public async Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default)
     {
-        var connection = new NpgsqlConnection(_connectionString); // create / setup the connection object
-        await connection.OpenAsync(); // open connection
+        var connection = new NpgsqlConnection(_connectionString); // create the connection object
+        await connection.OpenAsync(token); // open connection
         return connection; // return the connection instance
     }
 }

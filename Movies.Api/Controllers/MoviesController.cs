@@ -13,7 +13,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     [HttpPost(ApiEndpoints.Movies.Create)]
     // Similar to Next.js @body() parametrized decorator, [FromBody] does exactly the same
     // This means that when a POST request is made to the "/api/movies" route, ASP.NET Core will deserialize the body of the request into an instance of CreateMovieRequest automatically.
-    public async Task<IActionResult> Create([FromBody] CreateMovieRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken token)
     {
         // IActionResult is a general return type used by ASP.NET Core to represent the result of an action method in a controller. It allows for flexible return types like:
         // Ok(), NotFound(), BadRequest(), Created(), etc.
@@ -23,7 +23,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         // Now, I know there is an extension method i.e., added on CreateMovieRequest's instance i.e., request; so that method will be available on the instance i.e., request off course, which is what happens below  
         var movie = request.MapToMovie();
 
-        await _movieService.CreateAsync(movie);
+        await _movieService.CreateAsync(movie, token);
 
         return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
 
@@ -32,11 +32,11 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] string idOrSlug)
+    public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
     {
         var movie = Guid.TryParse(idOrSlug, out var id)
-            ? await _movieService.GetByIdAsync(id)
-            : await _movieService.GetBySlugAsync(idOrSlug); // this will return an instance of Movie
+            ? await _movieService.GetByIdAsync(id, token)
+            : await _movieService.GetBySlugAsync(idOrSlug, token); // this will return an instance of Movie
 
         if (movie is null) return NotFound();
 
@@ -47,28 +47,28 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.GetAll)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken token)
     {
-        var movies = await _movieService.GetAllAsync(); // this return
+        var movies = await _movieService.GetAllAsync(token); // this return
         var response = movies.MapToResponse();
 
         return Ok(response);
     }
 
     [HttpPut(ApiEndpoints.Movies.Update)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request, CancellationToken token)
     {
         var movie = request.MapToMovie(id);
-        var updatedMovie = await _movieService.UpdateAsync(movie);
+        var updatedMovie = await _movieService.UpdateAsync(movie, token);
         if (updatedMovie is null) return NotFound();
         var response = movie.MapToResponse();
         return Ok(response);
     }
 
     [HttpDelete(ApiEndpoints.Movies.Delete)]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
-        var deleted = await _movieService.DeleteAsync(id);
+        var deleted = await _movieService.DeleteAsync(id, token);
         if (!deleted) return NotFound();
         return Ok();
     }
