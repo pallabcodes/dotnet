@@ -57,8 +57,10 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     {
         var userId = HttpContext.GetUserId();
         var options = request.MapToOptions().WithUser(userId);
-        var movies = await _movieService.GetAllAsync(options, token); // this return
-        var moviesResponse = movies.MapToResponse();
+        var movies = await _movieService.GetAllAsync(options, token);
+        var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
+        // check: When click on `MapToResponse` it may show multiple options, which is the one ? look at the type of movies by ctrl + q or ide highlights automatically
+        var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, movieCount);
         return Ok(moviesResponse);
     }
 

@@ -1,6 +1,5 @@
 namespace Movies.Contracts.Responses;
 
-public class MoviesResponse
+public class MoviesResponse : PaginatedResponse<MovieResponse>
 {
-    public required IEnumerable<MovieResponse> Items { get; init; } = Enumerable.Empty<MovieResponse>();
 }
