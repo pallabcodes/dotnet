@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
@@ -32,5 +33,27 @@ public class RatingsController : ControllerBase
         // Proceed with the hardcoded userId
         var result = await _ratingService.RateMovieAsync(id, request.Rating, userId, token);
         return result ? Ok() : NotFound();
+    }
+
+    [Authorize]
+    [HttpDelete(ApiEndpoints.Movies.DeleteRating)]
+    public async Task<IActionResult> DeleteRating([FromRoute] Guid id, CancellationToken token = default)
+    {
+        // N.B: The id i.e., provided must be a movieId (that is mapped to id) that has a valid rating (not null)
+        // N.B: After deletion means (rating of the given movieId will be reset to null) but off course won't remove the movie itself 
+        var userId = Guid.Parse("d8566de3-b1a6-4a9b-b842-8e3887a82e41");
+        var result = await _ratingService.DeleteRatingAsync(id, userId, token);
+        return result ? Ok() : NotFound();
+    }
+
+    [Authorize]
+    [HttpGet(ApiEndpoints.Ratings.GetUserRatings)]
+    public async Task<IActionResult> GetUserRatings(CancellationToken token = default)
+    {
+        var userId = Guid.Parse("d8566de3-b1a6-4a9b-b842-8e3887a82e41");
+        var ratings = await _ratingService.GetRatingsForUserAsync(userId, token);
+        // TODO: understand what happened here ? and how MapToResponse() is available
+        var ratingsResponse = ratings.MapToResponse();
+        return Ok(ratingsResponse);
     }
 }
