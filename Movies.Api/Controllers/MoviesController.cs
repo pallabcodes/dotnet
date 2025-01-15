@@ -42,6 +42,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
     // [MapToApiVersion(1.0)]
     [HttpGet(ApiEndpoints.Movies.Get)]
+    // [ResponseCache(Duration = 30, VaryByHeader = "Access, Accept-Encoding", Location = ResponseCacheLocation.Any)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator,
@@ -128,6 +129,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     
     // [Authorize] -> This means anyone (or any role) can access this controller
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    // [ResponseCache(Duration = 30, VaryByQueryKeys = new []{"title", "year", "sortBy", "page", "pageSize"}, VaryByHeader = "Access, Accept-Encoding", Location = ResponseCacheLocation.Any)]
     [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken token)
     {
