@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Auth;
@@ -9,12 +10,16 @@ using Movies.Contracts.Responses;
 namespace Movies.Api.Controllers;
 
 [ApiController]
+[ApiVersion(1.0)]
+// [ApiVersion(2.0)]
 public class MoviesController(IMovieService movieService) : ControllerBase
 {
     private readonly IMovieService _movieService = movieService;
 
     [Authorize(AuthConstants.TrustedMemberPolicyName)]
     [HttpPost(ApiEndpoints.Movies.Create)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
     // Similar to Next.js @body() parametrized decorator, [FromBody] does exactly the same
     // This means that when a POST request is made to the "/api/movies" route, ASP.NET Core will deserialize the body of the request into an instance of CreateMovieRequest automatically.
     public async Task<IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken token)
@@ -29,15 +34,18 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
         await _movieService.CreateAsync(movie, token);
 
-        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
+        return CreatedAtAction(nameof(Create), new { idOrSlug = movie.Id }, movie);
 
         // TODO: below return `movie` which is a mistake and it will be fixed later
         // return Created($"{ApiEndpoints.Movies.Create}/{movie.Id}", movie);
     }
 
-    [AllowAnonymous]
+    // [MapToApiVersion(1.0)]
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken token)
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator,
+        CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
         var movie = Guid.TryParse(idOrSlug, out var id)
@@ -48,35 +56,79 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
         // TODO: rather than returning `movie` directly, use contracts to return
         var response = movie.MapToResponse();
-        
+
         var movieObj = new { id = movie.Id };
-        
+
         response.Links.Add(new Link
         {
-            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Get), values: new {idOrSlug = movie.Id })!,
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV1), values: new { idOrSlug = movie.Id })!,
             Rel = "self",
             Type = "GET"
         });
-        
+
         response.Links.Add(new Link
         {
             Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj)!,
             Rel = "self",
             Type = "PUT"
         });
-        
+
         response.Links.Add(new Link
         {
             Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj)!,
             Rel = "self",
             Type = "DELETE"
         });
-        
+
         return Ok(response);
     }
 
+    // N.B: Below is not allowed when using a single ApiVersion
+    
+    // [MapToApiVersion(2.0)]
+    // [HttpGet(ApiEndpoints.Movies.Get)]
+    // public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator,
+    //     CancellationToken token)
+    // {
+    //     var userId = HttpContext.GetUserId();
+    //     var movie = Guid.TryParse(idOrSlug, out var id)
+    //         ? await _movieService.GetByIdAsync(id, userId, token)
+    //         : await _movieService.GetBySlugAsync(idOrSlug, userId, token); // this will return an instance of Movie
+    //
+    //     if (movie is null) return NotFound();
+    //
+    //     // TODO: rather than returning `movie` directly, use contracts to return
+    //     var response = movie.MapToResponse();
+    //
+    //     var movieObj = new { id = movie.Id };
+    //
+    //     response.Links.Add(new Link
+    //     {
+    //         Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV2), values: new { idOrSlug = movie.Id })!,
+    //         Rel = "self",
+    //         Type = "GET"
+    //     });
+    //
+    //     response.Links.Add(new Link
+    //     {
+    //         Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj)!,
+    //         Rel = "self",
+    //         Type = "PUT"
+    //     });
+    //
+    //     response.Links.Add(new Link
+    //     {
+    //         Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj)!,
+    //         Rel = "self",
+    //         Type = "DELETE"
+    //     });
+    //
+    //     return Ok(response);
+    // }
+    
     // [Authorize] -> This means anyone (or any role) can access this controller
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
@@ -90,6 +142,9 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
     [Authorize(AuthConstants.TrustedMemberPolicyName)]
     [HttpPut(ApiEndpoints.Movies.Update)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request,
         CancellationToken token)
     {
@@ -103,6 +158,8 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
     [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpDelete(ApiEndpoints.Movies.Delete)]
+    [ProducesResponseType( StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
         var deleted = await _movieService.DeleteAsync(id, token);
