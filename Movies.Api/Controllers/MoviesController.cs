@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Auth;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
@@ -12,11 +13,19 @@ namespace Movies.Api.Controllers;
 [ApiController]
 [ApiVersion(1.0)]
 // [ApiVersion(2.0)]
-public class MoviesController(IMovieService movieService) : ControllerBase
+public class MoviesController : ControllerBase
 {
-    private readonly IMovieService _movieService = movieService;
+    private readonly IMovieService _movieService;
+    private readonly IOutputCacheStore _outputCacheStore;
 
-    [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    public MoviesController(IMovieService movieService, IOutputCacheStore outputCacheStore)
+    {
+        _movieService = movieService;
+        _outputCacheStore = outputCacheStore;
+    }
+
+    // [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    // [ServiceFilter(typeof(ApiKeyAuthFilter))]
     [HttpPost(ApiEndpoints.Movies.Create)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
@@ -34,6 +43,8 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
         await _movieService.CreateAsync(movie, token);
 
+        await _outputCacheStore.EvictByTagAsync("movies", token);
+
         return CreatedAtAction(nameof(Create), new { idOrSlug = movie.Id }, movie);
 
         // TODO: below return `movie` which is a mistake and it will be fixed later
@@ -42,9 +53,10 @@ public class MoviesController(IMovieService movieService) : ControllerBase
 
     // [MapToApiVersion(1.0)]
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [OutputCache(PolicyName = "MovieCache")]
     // [ResponseCache(Duration = 30, VaryByHeader = "Access, Accept-Encoding", Location = ResponseCacheLocation.Any)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator,
         CancellationToken token)
     {
@@ -85,7 +97,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     }
 
     // N.B: Below is not allowed when using a single ApiVersion
-    
+
     // [MapToApiVersion(2.0)]
     // [HttpGet(ApiEndpoints.Movies.Get)]
     // public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator,
@@ -126,9 +138,10 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     //
     //     return Ok(response);
     // }
-    
+
     // [Authorize] -> This means anyone (or any role) can access this controller
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [OutputCache(PolicyName = "MovieCache")]
     // [ResponseCache(Duration = 30, VaryByQueryKeys = new []{"title", "year", "sortBy", "page", "pageSize"}, VaryByHeader = "Access, Accept-Encoding", Location = ResponseCacheLocation.Any)]
     [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken token)
@@ -155,15 +168,19 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         var updatedMovie = await _movieService.UpdateAsync(movie, userId, token);
         if (updatedMovie is null) return NotFound();
         var response = movie.MapToResponse();
+        await _outputCacheStore.EvictByTagAsync("movies", token);
         return Ok(response);
     }
 
     [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpDelete(ApiEndpoints.Movies.Delete)]
-    [ProducesResponseType( StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
+        var userId = HttpContext.GetUserId();
+
+
         var deleted = await _movieService.DeleteAsync(id, token);
         if (!deleted) return NotFound();
         return Ok();
