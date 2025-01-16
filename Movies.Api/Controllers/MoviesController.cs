@@ -45,7 +45,9 @@ public class MoviesController : ControllerBase
 
         await _outputCacheStore.EvictByTagAsync("movies", token);
 
-        return CreatedAtAction(nameof(Create), new { idOrSlug = movie.Id }, movie);
+        var response = movie.MapToResponse();
+
+        return CreatedAtAction(nameof(Create), new { idOrSlug = movie.Id }, response);
 
         // TODO: below return `movie` which is a mistake and it will be fixed later
         // return Created($"{ApiEndpoints.Movies.Create}/{movie.Id}", movie);
@@ -151,7 +153,8 @@ public class MoviesController : ControllerBase
         var movies = await _movieService.GetAllAsync(options, token);
         var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
         // check: When click on `MapToResponse` it may show multiple options, which is the one ? look at the type of movies by ctrl + q or ide highlights automatically
-        var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, movieCount);
+        var moviesResponse = movies.MapToResponse(request.Page.GetValueOrDefault(PaginatedRequest.DefaultPage),
+            request.PageSize.GetValueOrDefault(PaginatedRequest.DefaultPageSize), movieCount);
         return Ok(moviesResponse);
     }
 

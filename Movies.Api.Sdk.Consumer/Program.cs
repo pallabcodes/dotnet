@@ -56,7 +56,4 @@ var request = new GetAllMoviesRequest
 
 var movies = await moviesApi.GetMoviesAsync(request);
 
-foreach (var movieResponse in movies.Items)
-{
-    Console.WriteLine(JsonSerializer.Serialize(movieResponse));
-}
+foreach (var movieResponse in movies.Items) Console.WriteLine(JsonSerializer.Serialize(movieResponse));

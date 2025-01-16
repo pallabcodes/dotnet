@@ -2,8 +2,9 @@ namespace Movies.Contracts.Requests;
 
 public class GetAllMoviesRequest : PaginatedRequest
 {
-    public required string? Title { get; init; }
-    public required int? Year { get; init; }
+    // N.B: if used require then the below attributes must be provided even with null
+    public string? Title { get; init; }
+    public int? Year { get; init; }
 
-    public required string? SortBy { get; init; }
+    public string? SortBy { get; init; }
 }
