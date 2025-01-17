@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api.Sdk", "Movies.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api.Sdk.Consumer", "Movies.Api.Sdk.Consumer\Movies.Api.Sdk.Consumer.csproj", "{A75B8D82-3FCF-4AB4-AF9C-CAA9382E7C30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperHeroApi", "SuperHeroApi\SuperHeroApi.csproj", "{2EB38813-6F9C-437D-8F99-827162FBE3D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{A75B8D82-3FCF-4AB4-AF9C-CAA9382E7C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A75B8D82-3FCF-4AB4-AF9C-CAA9382E7C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A75B8D82-3FCF-4AB4-AF9C-CAA9382E7C30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EB38813-6F9C-437D-8F99-827162FBE3D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EB38813-6F9C-437D-8F99-827162FBE3D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EB38813-6F9C-437D-8F99-827162FBE3D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EB38813-6F9C-437D-8F99-827162FBE3D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{389CEF30-BED4-49FF-BA2C-36F63F2FE465} = {4187DC1C-0D9A-4ECD-A7D5-F66DAFBC7657}
