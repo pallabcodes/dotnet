@@ -2,8 +2,7 @@ namespace ConsoleApp1;
 
 public class Warrior
 {
-    // Always create a single Random instance and reuse
-    // it or you will get the same value over and over
+    // Always create a single Random instance and reuse it, or you will get the same value over and over
     private readonly Random rnd = new();
 
     // Constructor initializes the warrior
@@ -31,8 +30,7 @@ public class Warrior
         return rnd.Next(1, (int)AttkMax);
     }
 
-    // Generate a random block value from
-    // 1 to the warriors maximum block
+    // Generate a random block value from 1 to the warriors maximum block
     public virtual double Block()
     {
         return rnd.Next(1, (int)BlockMax);

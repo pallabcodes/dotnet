@@ -1650,5 +1650,3 @@ internal class Program
         Black
     }
 }
-
-// 6 done
