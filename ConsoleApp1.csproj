@@ -7,4 +7,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Update="ConditionalDI\Program.cs">
+        <Link>OOP\Program.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>
