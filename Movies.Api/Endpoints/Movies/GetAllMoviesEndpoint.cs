@@ -1,4 +1,5 @@
 using Movies.Api.Auth;
+using Movies.Api.Configuration;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
@@ -30,7 +31,8 @@ public static class GetAllMoviesEndpoint
             .WithName($"{Name}V1")
             .Produces<MoviesResponse>()
             .WithApiVersionSet(ApiVersioning.VersionSet)
-            .HasApiVersion(1.0);
+            .HasApiVersion(1.0)
+            .RequireRateLimiting(RateLimitingConfiguration.GlobalPolicy);
 
         app.MapGet(
                 ApiEndpoints.Movies.GetAll,
@@ -51,7 +53,8 @@ public static class GetAllMoviesEndpoint
             .Produces<MoviesResponse>()
             .WithApiVersionSet(ApiVersioning.VersionSet)
             .HasApiVersion(2.0)
-            .CacheOutput("MovieCache");
+            .CacheOutput("MovieCache")
+            .RequireRateLimiting(RateLimitingConfiguration.GlobalPolicy);
 
         return app;
     }

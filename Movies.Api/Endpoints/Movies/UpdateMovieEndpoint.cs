@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Auth;
+using Movies.Api.Configuration;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
@@ -33,7 +34,8 @@ public static class UpdateMovieEndpoint
             .Produces<MovieResponse>()
             .Produces(StatusCodes.Status404NotFound)
             .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
-            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName);
+            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName)
+            .RequireRateLimiting(RateLimitingConfiguration.AuthenticatedPolicy);
 
         // N.B: it makes for `RequireAuthorization` to be at bottom since most likely it follows bottom -> top
 

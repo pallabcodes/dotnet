@@ -1,4 +1,5 @@
 using Movies.Api.Auth;
+using Movies.Api.Configuration;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Responses;
@@ -37,7 +38,8 @@ public static class GetMovieEndpoint
             .Produces<MovieResponse>()
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .CacheOutput("MovieCache");
+            .CacheOutput("MovieCache")
+            .RequireRateLimiting(RateLimitingConfiguration.GlobalPolicy);
 
         return app;
     }

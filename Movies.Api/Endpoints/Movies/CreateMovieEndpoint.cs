@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Auth;
+using Movies.Api.Configuration;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
@@ -28,7 +29,8 @@ public static class CreateMovieEndpoint
             }).WithName(Name)
             .Produces<MovieResponse>(StatusCodes.Status201Created)
             .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
-            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName);
+            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName)
+            .RequireRateLimiting(RateLimitingConfiguration.AuthenticatedPolicy);
 
         return app;
     }

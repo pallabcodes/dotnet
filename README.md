@@ -100,6 +100,8 @@ The database is automatically initialized in Development mode using `DbInitializ
 - **Authorization**: Role-based authorization with policies
 - **API Versioning**: Supports multiple API versions
 - **Output Caching**: Response caching for improved performance
+- **Rate Limiting**: Configurable rate limiting with different policies for global, authenticated, and admin users
+- **Security Headers**: Comprehensive security headers (HSTS, CSP, X-Frame-Options, etc.)
 - **Health Checks**: Database health monitoring
 - **Validation**: FluentValidation for request validation
 - **Structured Logging**: Comprehensive logging throughout
@@ -112,6 +114,18 @@ The database is automatically initialized in Development mode using `DbInitializ
 4. **Use parameterized queries** - All SQL queries use Dapper parameters
 5. **Connection pooling** - Configured for optimal performance
 6. **Health checks** - Monitor database connectivity
+7. **Rate limiting** - Configured with different policies:
+   - Global: 100 requests per 60 seconds per IP
+   - Authenticated: 200 requests per 60 seconds per user
+   - Admin: 500 requests per 60 seconds per user
+8. **Security headers** - Comprehensive security headers configured:
+   - Strict-Transport-Security (HSTS)
+   - Content-Security-Policy (CSP)
+   - X-Content-Type-Options
+   - X-Frame-Options
+   - X-XSS-Protection
+   - Referrer-Policy
+   - Permissions-Policy
 
 ## Development Guidelines
 
@@ -166,11 +180,11 @@ Movies.Application/
 - [ ] Enable HTTPS only
 - [ ] Configure CORS if needed
 - [ ] Set up monitoring and logging (Application Insights, etc.)
-- [ ] Add rate limiting
+- [x] Add rate limiting (configured with policies)
+- [x] Configure security headers (HSTS, CSP, X-Frame-Options, etc.)
 - [ ] Configure health check endpoints
 - [ ] Set up CI/CD pipeline
 - [ ] Add comprehensive test coverage
-- [ ] Review and configure security headers
 - [ ] Set up distributed tracing
 
 ## License

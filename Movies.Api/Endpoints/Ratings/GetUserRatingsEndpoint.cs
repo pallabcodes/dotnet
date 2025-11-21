@@ -1,3 +1,4 @@
+using Movies.Api.Configuration;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Responses;
@@ -24,7 +25,8 @@ public static class GetUserRatingsEndpoint
                     return TypedResults.Ok(ratingsResponse);
                 }).WithName(Name)
             .Produces<MovieRatingResponse>()
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .RequireRateLimiting(RateLimitingConfiguration.AuthenticatedPolicy);
 
         return app;
     }

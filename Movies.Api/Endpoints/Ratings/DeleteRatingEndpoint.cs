@@ -1,3 +1,4 @@
+using Movies.Api.Configuration;
 using Movies.Application.Services;
 
 namespace Movies.Api.Endpoints.Ratings;
@@ -19,10 +20,11 @@ public static class DeleteRatingEndpoint
 
                     var result = await ratingService.DeleteRatingAsync(id, userId.Value, token);
                     return result ? TypedResults.Ok() : Results.NotFound();
-                }).WithName(Name)
+                })            .WithName(Name)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization(); // this is the same as using [Authorize] in the RatingsController
+            .RequireAuthorization()
+            .RequireRateLimiting(RateLimitingConfiguration.AuthenticatedPolicy);
 
         return app;
     }

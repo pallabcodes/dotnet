@@ -2,6 +2,7 @@ using Movies.Api.Configuration;
 using Movies.Api.Endpoints;
 using Movies.Api.Health;
 using Movies.Api.Mapping;
+using Movies.Api.Middleware;
 using Movies.Application;
 using Movies.Application.Database;
 
@@ -13,6 +14,8 @@ builder.Services.AddJwtAuthentication(config);
 builder.Services.AddCustomAuthorization(config);
 builder.Services.AddApiVersioning();
 builder.Services.AddOutputCaching();
+builder.Services.AddRateLimiting(config);
+builder.Services.AddSecurityHeaders(config);
 builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 builder.Services.AddSwagger();
 builder.Services.AddApplication();
@@ -38,6 +41,8 @@ if (app.Environment.IsDevelopment())
 
 app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
+app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseOutputCache();

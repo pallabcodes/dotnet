@@ -1,3 +1,4 @@
+using Movies.Api.Configuration;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
@@ -21,10 +22,11 @@ public static class RateMovieEndpoint
 
                 var result = await ratingService.RateMovieAsync(id, request.Rating, userId.Value, token);
                 return result ? TypedResults.Ok() : Results.NotFound();
-            }).WithName(Name)
+            })            .WithName(Name)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .RequireRateLimiting(RateLimitingConfiguration.AuthenticatedPolicy);
 
 
         return app;
