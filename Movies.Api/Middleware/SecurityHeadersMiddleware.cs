@@ -7,15 +7,18 @@ public class SecurityHeadersMiddleware
     private readonly RequestDelegate _next;
     private readonly SecurityHeadersOptions _options;
     private readonly ILogger<SecurityHeadersMiddleware> _logger;
+    private readonly IWebHostEnvironment _environment;
 
     public SecurityHeadersMiddleware(
         RequestDelegate next,
         IOptions<SecurityHeadersOptions> options,
-        ILogger<SecurityHeadersMiddleware> logger)
+        ILogger<SecurityHeadersMiddleware> logger,
+        IWebHostEnvironment environment)
     {
         _next = next;
         _options = options.Value;
         _logger = logger;
+        _environment = environment;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -30,7 +33,10 @@ public class SecurityHeadersMiddleware
 
         if (_options.EnableContentSecurityPolicy)
         {
-            response.Headers.Append("Content-Security-Policy", _options.ContentSecurityPolicy);
+            var csp = _environment.IsDevelopment() 
+                ? _options.ContentSecurityPolicyDevelopment 
+                : _options.ContentSecurityPolicy;
+            response.Headers.Append("Content-Security-Policy", csp);
         }
 
         if (_options.EnableXContentTypeOptions)
@@ -72,6 +78,8 @@ public class SecurityHeadersOptions
 
     public bool EnableContentSecurityPolicy { get; set; } = true;
     public string ContentSecurityPolicy { get; set; } = 
+        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none';";
+    public string ContentSecurityPolicyDevelopment { get; set; } = 
         "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none';";
 
     public bool EnableXContentTypeOptions { get; set; } = true;

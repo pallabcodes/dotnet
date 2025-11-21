@@ -16,19 +16,6 @@ public static class RateLimitingConfiguration
 
         services.AddRateLimiter(options =>
         {
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-            {
-                return RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                    factory: _ => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = rateLimitOptions.GlobalPermitLimit,
-                        Window = TimeSpan.FromSeconds(rateLimitOptions.GlobalWindowSeconds),
-                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        QueueLimit = rateLimitOptions.GlobalQueueLimit
-                    });
-            });
-
             options.AddPolicy(GlobalPolicy, context =>
             {
                 return RateLimitPartition.GetFixedWindowLimiter(
@@ -44,7 +31,9 @@ public static class RateLimitingConfiguration
 
             options.AddPolicy(AuthenticatedPolicy, context =>
             {
-                var userId = context.User?.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var userId = GetUserIdFromClaims(context) 
+                    ?? context.Connection.RemoteIpAddress?.ToString() 
+                    ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: userId,
                     factory: _ => new FixedWindowRateLimiterOptions
@@ -58,7 +47,9 @@ public static class RateLimitingConfiguration
 
             options.AddPolicy(AdminPolicy, context =>
             {
-                var userId = context.User?.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var userId = GetUserIdFromClaims(context) 
+                    ?? context.Connection.RemoteIpAddress?.ToString() 
+                    ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: userId,
                     factory: _ => new FixedWindowRateLimiterOptions
@@ -83,6 +74,18 @@ public static class RateLimitingConfiguration
         });
 
         return services;
+    }
+
+    private static string? GetUserIdFromClaims(HttpContext context)
+    {
+        if (context.User?.Identity?.IsAuthenticated != true)
+        {
+            return null;
+        }
+
+        return context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+            ?? context.User.FindFirst("sub")?.Value
+            ?? context.User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
     }
 }
 
