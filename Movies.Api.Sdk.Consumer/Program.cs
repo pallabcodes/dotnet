@@ -15,7 +15,8 @@ services
     {
         // Create a Refit client manually and pass HttpClient
         var httpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient();
-        httpClient.BaseAddress = new Uri("https://localhost:7280");
+        var baseAddress = Environment.GetEnvironmentVariable("MOVIES_API_BASE_URL") ?? "https://localhost:7280";
+        httpClient.BaseAddress = new Uri(baseAddress);
 
         return RestService.For<IMoviesApi>(httpClient);
     });

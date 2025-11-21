@@ -6,7 +6,7 @@ namespace Movies.Contracts.Responses;
 public abstract class HalResponse
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Link> Links { get; set; } = new(); // Todo: what does this new() do here?
+    public List<Link> Links { get; set; } = new();
 }
 
 public class Link

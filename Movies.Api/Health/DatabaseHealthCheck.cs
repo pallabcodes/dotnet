@@ -16,18 +16,18 @@ public class DatabaseHealthCheck : IHealthCheck
         _logger = logger;
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken token = new())
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken token = default)
     {
         try
         {
-            _ = await _dbConnectionFactory.CreateConnectionAsync(token);
-            return HealthCheckResult.Healthy();
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+            return HealthCheckResult.Healthy("Database connection is healthy");
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            const string errorMessage = "Database unhealthy";
-            _logger.LogError(errorMessage, e);
-            return HealthCheckResult.Unhealthy(errorMessage, e);
+            const string errorMessage = "Database connection failed";
+            _logger.LogError(ex, errorMessage);
+            return HealthCheckResult.Unhealthy(errorMessage, ex);
         }
     }
 }

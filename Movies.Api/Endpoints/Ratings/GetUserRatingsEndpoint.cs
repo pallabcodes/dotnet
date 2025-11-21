@@ -13,8 +13,13 @@ public static class GetUserRatingsEndpoint
         app.MapGet(ApiEndpoints.Ratings.GetUserRatings,
                 async (HttpContext context, IRatingService ratingService, CancellationToken token) =>
                 {
-                    var userId = Guid.Parse("d8566de3-b1a6-4a9b-b842-8e3887a82e41");
-                    var ratings = await ratingService.GetRatingsForUserAsync(userId, token);
+                    var userId = context.GetUserId();
+                    if (!userId.HasValue)
+                    {
+                        return Results.Unauthorized();
+                    }
+
+                    var ratings = await ratingService.GetRatingsForUserAsync(userId.Value, token);
                     var ratingsResponse = ratings.MapToResponse();
                     return TypedResults.Ok(ratingsResponse);
                 }).WithName(Name)

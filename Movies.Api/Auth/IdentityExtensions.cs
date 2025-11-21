@@ -2,12 +2,23 @@ namespace Movies.Api.Auth;
 
 public static class IdentityExtensions
 {
+    private const string UserIdClaimType = "userid";
+
     public static Guid? GetUserId(this HttpContext context)
     {
-        var userId = context.User.Claims.SingleOrDefault(x => x.Type == "userId");
+        if (context is null)
+        {
+            return null;
+        }
 
-        if (Guid.TryParse(userId?.Value, out var parsedId)) return parsedId;
+        var userIdClaim = context.User.Claims
+            .FirstOrDefault(x => string.Equals(x.Type, UserIdClaimType, StringComparison.OrdinalIgnoreCase));
 
-        return null;
+        if (userIdClaim is null || string.IsNullOrWhiteSpace(userIdClaim.Value))
+        {
+            return null;
+        }
+
+        return Guid.TryParse(userIdClaim.Value, out var parsedId) ? parsedId : null;
     }
 }

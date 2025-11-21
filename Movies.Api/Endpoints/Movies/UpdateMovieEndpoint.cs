@@ -21,8 +21,12 @@ public static class UpdateMovieEndpoint
                 var userId = context.GetUserId();
 
                 var updatedMovie = await movieService.UpdateAsync(movie, userId, token);
-                if (updatedMovie is null) return Results.NotFound();
-                var response = movie.MapToResponse();
+                if (updatedMovie is null)
+                {
+                    return Results.NotFound();
+                }
+
+                var response = updatedMovie.MapToResponse();
                 await outputCacheStore.EvictByTagAsync("movies", token);
                 return TypedResults.Ok(response);
             }).WithName(Name)

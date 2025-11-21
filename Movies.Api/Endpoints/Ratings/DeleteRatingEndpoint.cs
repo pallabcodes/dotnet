@@ -11,8 +11,13 @@ public static class DeleteRatingEndpoint
         app.MapDelete(ApiEndpoints.Movies.DeleteRating,
                 async (Guid id, HttpContext context, IRatingService ratingService, CancellationToken token) =>
                 {
-                    var userId = Guid.Parse("d8566de3-b1a6-4a9b-b842-8e3887a82e41");
-                    var result = await ratingService.DeleteRatingAsync(id, userId, token);
+                    var userId = context.GetUserId();
+                    if (!userId.HasValue)
+                    {
+                        return Results.Unauthorized();
+                    }
+
+                    var result = await ratingService.DeleteRatingAsync(id, userId.Value, token);
                     return result ? TypedResults.Ok() : Results.NotFound();
                 }).WithName(Name)
             .Produces(StatusCodes.Status200OK)

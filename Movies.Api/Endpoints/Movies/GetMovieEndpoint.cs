@@ -11,23 +11,32 @@ public static class GetMovieEndpoint
 
     public static IEndpointRouteBuilder MapGetMovie(this IEndpointRouteBuilder app)
     {
-        app.MapGet(ApiEndpoints.Movies.Get,
+        app.MapGet(
+                ApiEndpoints.Movies.Get,
                 async (string idOrSlug, IMovieService movieService, HttpContext context, CancellationToken token) =>
                 {
+                    if (string.IsNullOrWhiteSpace(idOrSlug))
+                    {
+                        return Results.BadRequest("Id or slug cannot be empty");
+                    }
+
                     var userId = context.GetUserId();
                     var movie = Guid.TryParse(idOrSlug, out var id)
                         ? await movieService.GetByIdAsync(id, userId, token)
-                        : await movieService.GetBySlugAsync(idOrSlug, userId,
-                            token);
+                        : await movieService.GetBySlugAsync(idOrSlug, userId, token);
 
-                    if (movie is null) return Results.NotFound();
+                    if (movie is null)
+                    {
+                        return Results.NotFound();
+                    }
 
-                    // TODO: rather than returning `movie` directly, use contracts to return
                     var response = movie.MapToResponse();
                     return TypedResults.Ok(response);
-                }).WithName(Name)
+                })
+            .WithName(Name)
             .Produces<MovieResponse>()
             .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status400BadRequest)
             .CacheOutput("MovieCache");
 
         return app;

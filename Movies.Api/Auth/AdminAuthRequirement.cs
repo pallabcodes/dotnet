@@ -36,9 +36,17 @@ public class AdminAuthRequirement : IAuthorizationHandler, IAuthorizationRequire
         }
 
         var identity = (ClaimsIdentity)httpContext.User.Identity!;
-        // N.B: Below "userid" refer to IdentityExtension.cs file
-        identity.AddClaim(new Claim("userid",
-            Guid.Parse("74e20de1-8dd0-4bc2-a9f5-8aa3203ad209").ToString())); // arbitrary guid
+        if (identity is not null)
+        {
+            var userIdClaim = httpContext.User.Claims
+                .FirstOrDefault(c => string.Equals(c.Type, "userid", StringComparison.OrdinalIgnoreCase));
+            
+            if (userIdClaim is null)
+            {
+                identity.AddClaim(new Claim("userid", Guid.NewGuid().ToString()));
+            }
+        }
+        
         context.Succeed(this);
         return Task.CompletedTask;
     }

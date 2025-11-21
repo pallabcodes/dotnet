@@ -4,6 +4,8 @@ namespace Movies.Application.Models;
 
 public class Movie
 {
+    private static readonly Regex SlugRegex = new("[^0-9A-Za-z _-]", RegexOptions.Compiled | RegexOptions.NonBacktracking);
+
     public required Guid Id { get; init; }
     public required string Title { get; set; }
 
@@ -16,13 +18,12 @@ public class Movie
 
     private string GenerateSlug()
     {
-        var sluggedTitle = SlugRegex().Replace(Title, "").Replace(" ", "-");
-        return $"{sluggedTitle}-{YearOfRelease}";
-    }
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            return $"{YearOfRelease}";
+        }
 
-    // Use a static method to create the regex
-    private static Regex SlugRegex()
-    {
-        return new Regex("[^0-9A-Za-z _-]", RegexOptions.Compiled | RegexOptions.NonBacktracking);
+        var sluggedTitle = SlugRegex.Replace(Title, string.Empty).Replace(" ", "-", StringComparison.Ordinal);
+        return $"{sluggedTitle}-{YearOfRelease}";
     }
 }

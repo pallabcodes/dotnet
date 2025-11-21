@@ -23,46 +23,43 @@ public static class ContractMapping
      */
     public static Movie MapToMovie(this CreateMovieRequest request)
     {
-        try
+        if (request is null)
         {
-            // 1. Here, the only thing that happens is that data transfomration. So, access whatever available from request
-            // 2. Then, transform the data through below Movie by mapping the correct value to correct fields of Movie class
-            return new Movie
-            {
-                Id = Guid.NewGuid(),
-                Title = request.Title,
-                YearOfRelease = request.YearOfRelease,
-                Genres = request.Genres
-                    .ToList() // Genres is a collection, and request.Genres.ToList() is used to convert it to a list.
-            };
+            throw new ArgumentNullException(nameof(request));
         }
-        catch (Exception ex)
+
+        return new Movie
         {
-            throw new ApplicationException("Error mapping to Movie", ex);
-        }
+            Id = Guid.NewGuid(),
+            Title = request.Title,
+            YearOfRelease = request.YearOfRelease,
+            Genres = request.Genres.ToList()
+        };
     }
 
     public static Movie MapToMovie(this UpdateMovieRequest request, Guid id)
     {
-        try
+        if (request is null)
         {
-            return new Movie
-            {
-                Id = id,
-                Title = request.Title,
-                YearOfRelease = request.YearOfRelease,
-                Genres = request.Genres
-                    .ToList() // Genres is a collection, and request.Genres.ToList() is used to convert it to a list.
-            };
+            throw new ArgumentNullException(nameof(request));
         }
-        catch (Exception ex)
+
+        return new Movie
         {
-            throw new ApplicationException("Error mapping to Movie", ex);
-        }
+            Id = id,
+            Title = request.Title,
+            YearOfRelease = request.YearOfRelease,
+            Genres = request.Genres.ToList()
+        };
     }
 
     public static MovieResponse MapToResponse(this Movie movie)
     {
+        if (movie is null)
+        {
+            throw new ArgumentNullException(nameof(movie));
+        }
+
         return new MovieResponse
         {
             Id = movie.Id,
@@ -77,6 +74,11 @@ public static class ContractMapping
 
     public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies, int page, int pageSize, int totalCount)
     {
+        if (movies is null)
+        {
+            throw new ArgumentNullException(nameof(movies));
+        }
+
         return new MoviesResponse
         {
             Items = movies.Select(MapToResponse),
@@ -98,13 +100,21 @@ public static class ContractMapping
 
     public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)
     {
+        if (request is null)
+        {
+            throw new ArgumentNullException(nameof(request));
+        }
+
         return new GetAllMoviesOptions
         {
             Title = request.Title,
             YearOfRelease = request.Year,
             SortField = request.SortBy?.Trim('+', '-'),
-            SortOrder = request.SortBy is null ? SortOrder.UnSorted :
-                request.SortBy.StartsWith('-') ? SortOrder.Descending : SortOrder.Ascending,
+            SortOrder = request.SortBy is null 
+                ? SortOrder.UnSorted 
+                : request.SortBy.StartsWith('-') 
+                    ? SortOrder.Descending 
+                    : SortOrder.Ascending,
             Page = request.Page.GetValueOrDefault(PaginatedRequest.DefaultPage),
             PageSize = request.PageSize.GetValueOrDefault(PaginatedRequest.DefaultPageSize)
         };
@@ -112,6 +122,11 @@ public static class ContractMapping
 
     public static GetAllMoviesOptions WithUser(this GetAllMoviesOptions options, Guid? userId)
     {
+        if (options is null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
         options.UserId = userId;
         return options;
     }

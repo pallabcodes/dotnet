@@ -1,0 +1,18 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.cs]
+# File length limit: 150-200 lines
+# Method length limit: 50-70 lines
+max_line_length = 120
+end_of_line = lf
+
+[*.{json,yml,yaml}]
+indent_size = 2
+

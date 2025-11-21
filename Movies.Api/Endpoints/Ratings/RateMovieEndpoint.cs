@@ -13,14 +13,13 @@ public static class RateMovieEndpoint
                 HttpContext context, IRatingService ratingService,
                 CancellationToken token = default) =>
             {
-                // N.B: This is not working so used the `WORKAROUND` below
-                // var userId = context.GetUserId();
+                var userId = context.GetUserId();
+                if (!userId.HasValue)
+                {
+                    return Results.Unauthorized();
+                }
 
-                // WORKAROUND: Hardcode an arbitrary userId for now as below
-                var userId = Guid.Parse("d8566de3-b1a6-4a9b-b842-8e3887a82e41");
-
-                // Proceed with the hardcoded userId
-                var result = await ratingService.RateMovieAsync(id, request.Rating, userId, token);
+                var result = await ratingService.RateMovieAsync(id, request.Rating, userId.Value, token);
                 return result ? TypedResults.Ok() : Results.NotFound();
             }).WithName(Name)
             .Produces(StatusCodes.Status200OK)

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
 
@@ -10,18 +11,30 @@ public class MovieService : IMovieService
     private readonly IValidator<Movie> _movieValidator;
     private readonly IValidator<GetAllMoviesOptions> _optionsValidator;
     private readonly IRatingRepository _ratingRepository;
+    private readonly ILogger<MovieService> _logger;
 
-    public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator,
-        IRatingRepository ratingRepository, IValidator<GetAllMoviesOptions> optionsValidator)
+    public MovieService(
+        IMovieRepository movieRepository,
+        IValidator<Movie> movieValidator,
+        IRatingRepository ratingRepository,
+        IValidator<GetAllMoviesOptions> optionsValidator,
+        ILogger<MovieService> logger)
     {
         _movieRepository = movieRepository;
         _movieValidator = movieValidator;
         _ratingRepository = ratingRepository;
         _optionsValidator = optionsValidator;
+        _logger = logger;
     }
 
     public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default)
     {
+        if (movie is null)
+        {
+            _logger.LogWarning("Attempted to create null movie");
+            return false;
+        }
+
         await _movieValidator.ValidateAndThrowAsync(movie, token);
         return await _movieRepository.CreateAsync(movie, token);
     }
@@ -33,20 +46,43 @@ public class MovieService : IMovieService
 
     public Task<Movie?> GetBySlugAsync(string slug, Guid? userId = default, CancellationToken token = default)
     {
+        if (string.IsNullOrWhiteSpace(slug))
+        {
+            _logger.LogWarning("Attempted to get movie with null or empty slug");
+            return Task.FromResult<Movie?>(null);
+        }
+
         return _movieRepository.GetBySlugAsync(slug, userId, token);
     }
 
     public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
     {
+        if (options is null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
         await _optionsValidator.ValidateAndThrowAsync(options, token);
         return await _movieRepository.GetAllAsync(options, token);
     }
 
     public async Task<Movie?> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
     {
+        if (movie is null)
+        {
+            _logger.LogWarning("Attempted to update null movie");
+            return null;
+        }
+
         await _movieValidator.ValidateAndThrowAsync(movie, token);
         var movieExists = await _movieRepository.ExistsByIdAsync(movie.Id, token);
-        if (!movieExists) return null;
+        
+        if (!movieExists)
+        {
+            _logger.LogWarning("Movie not found for update: {MovieId}", movie.Id);
+            return null;
+        }
+
         await _movieRepository.UpdateAsync(movie, token);
 
         if (!userId.HasValue)
