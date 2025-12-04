@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore
+        run: dotnet restore CleanMovies/CleanMovies.sln
+      - name: Build
+        run: dotnet build CleanMovies/CleanMovies.sln --configuration Release --no-restore
+      - name: Test
+        run: DOTNET_ENVIRONMENT=Testing dotnet test CleanMovies/CleanMovies.sln --no-build
+      - name: Validate EF migrations
+        run: dotnet ef migrations script -p CleanMovies/src/CleanMovies.Infrastructure -s CleanMovies/src/CleanMovies.Api --idempotent --output migration.sql

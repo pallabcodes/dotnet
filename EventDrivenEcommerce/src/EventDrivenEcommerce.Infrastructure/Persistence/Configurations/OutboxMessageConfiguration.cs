@@ -1,0 +1,39 @@
+using EventDrivenEcommerce.Application.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace EventDrivenEcommerce.Infrastructure.Persistence.Configurations;
+
+/// <summary>
+/// Entity configuration for OutboxMessage.
+/// </summary>
+public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
+{
+    public void Configure(EntityTypeBuilder<OutboxMessage> builder)
+    {
+        builder.ToTable("OutboxMessages");
+
+        builder.HasKey(m => m.Id);
+
+        builder.Property(m => m.Type)
+            .HasMaxLength(500)
+            .IsRequired();
+
+        builder.Property(m => m.Content)
+            .HasColumnType("nvarchar(max)")
+            .IsRequired();
+
+        builder.Property(m => m.OccurredOn)
+            .IsRequired();
+
+        builder.Property(m => m.ProcessedOn);
+
+        builder.Property(m => m.Error)
+            .HasMaxLength(1000);
+
+        builder.HasIndex(m => m.ProcessedOn)
+            .IsDescending()
+            .HasFilter("ProcessedOn IS NULL");
+    }
+}
+
