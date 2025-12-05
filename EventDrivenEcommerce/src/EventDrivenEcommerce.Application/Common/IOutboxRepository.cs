@@ -29,8 +29,10 @@ public sealed class OutboxMessage
 
     public OutboxMessage(IIntegrationEvent integrationEvent)
     {
-        Type = integrationEvent.GetType().FullName ?? integrationEvent.GetType().Name;
-        Content = System.Text.Json.JsonSerializer.Serialize(integrationEvent);
+        Type = integrationEvent.GetType().AssemblyQualifiedName
+               ?? integrationEvent.GetType().FullName
+               ?? integrationEvent.GetType().Name;
+        Content = System.Text.Json.JsonSerializer.Serialize(integrationEvent, integrationEvent.GetType());
         OccurredOn = integrationEvent.OccurredOn;
     }
 
@@ -44,4 +46,3 @@ public sealed class OutboxMessage
         Error = error;
     }
 }
-

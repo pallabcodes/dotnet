@@ -5,7 +5,6 @@ using EventDrivenEcommerce.Application.Commands.PlaceOrder;
 using EventDrivenEcommerce.Application.Common;
 using EventDrivenEcommerce.Domain.ValueObjects;
 using EventDrivenEcommerce.Infrastructure;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +26,7 @@ builder.Host.UseSerilog((context, config) =>
 
 // Add services
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
 // ASP.NET Core
 builder.Services.AddControllers();

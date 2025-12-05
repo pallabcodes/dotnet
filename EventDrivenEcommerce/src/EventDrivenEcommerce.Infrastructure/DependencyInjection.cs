@@ -6,6 +6,7 @@ using EventDrivenEcommerce.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace EventDrivenEcommerce.Infrastructure;
 
@@ -14,24 +15,40 @@ namespace EventDrivenEcommerce.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment? environment = null)
     {
-        // Database
-        services.AddDbContext<EcommerceDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("Default")));
+        var isTesting = string.Equals(environment?.EnvironmentName, "Testing", StringComparison.OrdinalIgnoreCase);
 
-        // Repositories
+        // Database
+        if (isTesting)
+        {
+            services.AddDbContext<EcommerceDbContext>(options =>
+                options.UseInMemoryDatabase("EventDrivenEcommerce"));
+        }
+        else
+        {
+            services.AddDbContext<EcommerceDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("Default")));
+        }
+
+        // Repositories & UoW
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<EcommerceDbContext>());
         services.AddScoped<IOutboxRepository, OutboxRepository>();
 
         // Messaging
-        var rabbitMqSettings = configuration.GetSection("RabbitMQ").Get<RabbitMqSettings>() ?? new RabbitMqSettings();
-        services.AddSingleton(rabbitMqSettings);
-        services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
-        services.AddHostedService<OutboxProcessor>();
+        if (isTesting)
+        {
+            services.AddSingleton<IEventPublisher, NoOpEventPublisher>();
+        }
+        else
+        {
+            var rabbitMqSettings = configuration.GetSection("RabbitMQ").Get<RabbitMqSettings>() ?? new RabbitMqSettings();
+            services.AddSingleton(rabbitMqSettings);
+            services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
+            services.AddHostedService<OutboxProcessor>();
+        }
 
         return services;
     }
 }
-

@@ -2,8 +2,9 @@ namespace EventDrivenEcommerce.Domain.ValueObjects;
 
 /// <summary>
 /// Value object representing monetary amounts with currency.
+/// Implements value-based equality semantics for predictable comparisons.
 /// </summary>
-public sealed class Money
+public sealed class Money : IEquatable<Money>
 {
     public decimal Amount { get; private set; }
     public string Currency { get; private set; } = string.Empty;
@@ -35,5 +36,18 @@ public sealed class Money
     public bool IsPositive => Amount > 0;
     public bool IsNegative => Amount < 0;
     public bool IsZero => Amount == 0;
-}
 
+    public bool Equals(Money? other) =>
+        other is not null &&
+        Amount == other.Amount &&
+        string.Equals(Currency, other.Currency, StringComparison.OrdinalIgnoreCase);
+
+    public override bool Equals(object? obj) => Equals(obj as Money);
+
+    public override int GetHashCode() => HashCode.Combine(Amount, Currency.ToUpperInvariant());
+
+    public static bool operator ==(Money? left, Money? right) =>
+        EqualityComparer<Money>.Default.Equals(left, right);
+
+    public static bool operator !=(Money? left, Money? right) => !(left == right);
+}

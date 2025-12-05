@@ -6,7 +6,7 @@ using EventDrivenEcommerce.Domain.Repositories;
 using EventDrivenEcommerce.Domain.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 
 namespace EventDrivenEcommerce.Infrastructure.Persistence;
 
@@ -17,14 +17,19 @@ namespace EventDrivenEcommerce.Infrastructure.Persistence;
 public sealed class EcommerceDbContext : DbContext, IUnitOfWork
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<EcommerceDbContext> _logger;
 
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
-    public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options, IMediator mediator)
+    public EcommerceDbContext(
+        DbContextOptions<EcommerceDbContext> options,
+        IMediator mediator,
+        ILogger<EcommerceDbContext> logger)
         : base(options)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,15 +40,14 @@ public sealed class EcommerceDbContext : DbContext, IUnitOfWork
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // Collect domain events before saving
         var domainEvents = CollectDomainEvents();
 
-        var result = await base.SaveChangesAsync(cancellationToken);
+        if (domainEvents.Any())
+        {
+            await PublishDomainEventsAsync(domainEvents, cancellationToken);
+        }
 
-        // Publish domain events after successful save
-        await PublishDomainEventsAsync(domainEvents, cancellationToken);
-
-        return result;
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -84,24 +88,16 @@ public sealed class EcommerceDbContext : DbContext, IUnitOfWork
 
     private async Task PublishDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents, CancellationToken cancellationToken)
     {
-        if (!domainEvents.Any())
-            return;
-
-        Console.WriteLine($"Publishing {domainEvents.Count()} domain events");
-
         try
         {
             var notification = new DomainEventsPublishedNotification(domainEvents);
             await _mediator.Publish(notification, cancellationToken);
-            Console.WriteLine("Domain events notification published successfully");
         }
         catch (Exception ex)
         {
-            // Log the error but don't fail the transaction
-            // Events will be published later via outbox pattern
-            // In a real system, you might want to store failed events for retry
-            Console.WriteLine($"Failed to publish domain events: {ex.Message}");
+            // We intentionally swallow exceptions to avoid breaking the transaction
+            // but we log so the outbox processor can be retried or investigated.
+            _logger.LogError(ex, "Failed to publish domain events");
         }
     }
 }
-

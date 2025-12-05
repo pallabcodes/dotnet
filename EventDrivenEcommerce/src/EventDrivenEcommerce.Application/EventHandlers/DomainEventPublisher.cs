@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace EventDrivenEcommerce.Application.EventHandlers;
 
 /// <summary>
-/// Handler that processes domain events and stores them as outbox messages for reliable publishing.
+/// Handles domain events by persisting corresponding integration events into the outbox.
 /// </summary>
 public sealed class DomainEventPublisher : INotificationHandler<DomainEventsPublishedNotification>
 {
@@ -22,33 +22,24 @@ public sealed class DomainEventPublisher : INotificationHandler<DomainEventsPubl
 
     public async Task Handle(DomainEventsPublishedNotification notification, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"DomainEventPublisher handling {notification.DomainEvents.Count()} events");
-
         foreach (var domainEvent in notification.DomainEvents)
         {
-            Console.WriteLine($"Processing domain event: {domainEvent.GetType().Name}");
-
             var integrationEvent = DomainEventToIntegrationEventMapper.MapToIntegrationEvent(domainEvent);
-            if (integrationEvent != null)
+            if (integrationEvent is null)
             {
-                Console.WriteLine($"Creating outbox message for integration event: {integrationEvent.GetType().Name}");
-
-                var outboxMessage = new OutboxMessage(integrationEvent);
-                await _outboxRepository.AddAsync(outboxMessage, cancellationToken);
-
-                _logger.LogInformation("Stored integration event {EventType} in outbox for domain event {DomainEventType}",
-                    integrationEvent.GetType().Name, domainEvent.GetType().Name);
+                _logger.LogDebug("Skipping domain event {DomainEventType} because no integration mapping exists", domainEvent.GetType().Name);
+                continue;
             }
-            else
-            {
-                Console.WriteLine($"No integration event mapped for domain event: {domainEvent.GetType().Name}");
-            }
+
+            var outboxMessage = new OutboxMessage(integrationEvent);
+            await _outboxRepository.AddAsync(outboxMessage, cancellationToken);
+
+            _logger.LogInformation("Enqueued integration event {EventType} for domain event {DomainEventType}", integrationEvent.GetType().Name, domainEvent.GetType().Name);
         }
     }
 }
 
 /// <summary>
-/// Notification raised when domain events are published from an aggregate.
+/// Notification raised when domain events are collected for persistence.
 /// </summary>
 public sealed record DomainEventsPublishedNotification(IEnumerable<IDomainEvent> DomainEvents) : INotification;
-
