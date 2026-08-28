@@ -1,31 +1,30 @@
-# .NET
+# .NET build output
 bin/
 obj/
-packages/
+*.user
+*.suo
+*.userprefs
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
 
 # Rider / JetBrains
 .idea/
 *.iml
-/.idea/
 /_ReSharper.Caches/
 
-# User-specific files
-*.user
-*.userosscache
-*.suo
-*.userprefs
+# Visual Studio
+.vs/
+.vscode/
 
-# Logs and temporary files
+# Logs / temporary files
 *.log
 *.swp
 
-# NuGet packages
+# NuGet
 .nuget/
-# Uncomment to ignore global NuGet package cache
-# ~/.nuget/
+packages/
 
-# Visual Studio for Mac
-.vscode/
-
-# Build results and temporary files
-/dist/
+# OS
+.DS_Store
