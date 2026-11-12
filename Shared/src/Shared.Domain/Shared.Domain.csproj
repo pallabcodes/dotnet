@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Shared.Domain</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Internal Platform Team</Authors>
+    <Description>Shared domain base types: Entity, ValueObject, IDomainEvent/DomainEventBase.</Description>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+</Project>

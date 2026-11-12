@@ -1,0 +1,12 @@
+<!-- Directory.Build.props — applies to every project in the repo.
+     Single source of truth for compile-level conventions. -->
+
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

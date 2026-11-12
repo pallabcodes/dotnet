@@ -13,10 +13,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: Restore
-        run: dotnet restore SaaSUsageBilling.sln
-      - name: Build
-        run: dotnet build SaaSUsageBilling.sln --no-restore -c Release
-      - name: Test
-        run: dotnet test SaaSUsageBilling.sln --no-build --logger trx
-
+      - name: Build + test Shared (internal libs)
+        run: |
+          dotnet build Shared/Shared.sln -c Release
+          dotnet test Shared/Shared.sln --no-build -c Release
+          dotnet pack Shared/Shared.sln -c Release --no-build
+      - name: Build + test service scaffold
+        run: |
+          dotnet build Template/Template.sln -c Release
+          dotnet test Template/Template.sln --no-build -c Release
